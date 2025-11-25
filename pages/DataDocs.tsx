@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Database, FileText, Download, ExternalLink, Trash2, Github, Globe, HardDrive, 
   Plus, RefreshCw, ToggleLeft, ToggleRight, ChevronRight, ChevronDown, FileCode, Folder, ArrowLeft, CheckCircle2,
-  Lock, User, Key, AtSign, Search, Loader2, Play, Eye, Image as ImageIcon, Save, Edit2, ChevronUp, LayoutTemplate, Filter, MousePointerClick, X, FolderOpen
+  Lock, User, Key, AtSign, Search, Loader2, Play, Eye, Image as ImageIcon, Save, Edit2, ChevronUp, LayoutTemplate, Filter, MousePointerClick, X, FolderOpen, List
 } from 'lucide-react';
 import { Project, DataSource, DataSourceType, ParsingStatus, DocumentArtifact } from '../types';
 import { Modal } from '../components/Layout';
@@ -86,62 +86,130 @@ const FileTreeNode = ({ node, onSelect, depth = 0 }: { node: any, onSelect: (nod
 
 // --- Detail Views ---
 
-const GitDetailView: React.FC<{ source: DataSource, onBack: () => void }> = ({ source, onBack }) => {
+const GitDetailView: React.FC<{ 
+  source: DataSource, 
+  onBack: () => void,
+  onUpdateSource: (ds: DataSource) => void
+}> = ({ source, onBack, onUpdateSource }) => {
   const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'explorer' | 'tracked'>('explorer');
+
+  const toggleDoc = (docId: string) => {
+     const updatedDocs = source.documents.map(d => 
+        d.id === docId ? { ...d, isEnabled: !d.isEnabled } : d
+     );
+     onUpdateSource({ ...source, documents: updatedDocs });
+  };
 
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-300">
-      <div className="flex items-center mb-4 pb-4 border-b border-slate-200">
-        <button onClick={onBack} className="mr-4 p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
-          <ArrowLeft size={20} />
-        </button>
-        <div>
-          <h3 className="text-xl font-bold text-slate-800">{source.name}</h3>
-          <p className="text-xs text-slate-500 font-mono flex items-center gap-2">
-            {source.config.url} <span className="bg-slate-100 px-1 rounded text-slate-600">{source.config.branch}</span>
-            {source.config.username && <span className="flex items-center text-slate-400"><User size={10} className="mr-1"/> {source.config.username}</span>}
-          </p>
+      <div className="flex items-center mb-4 pb-4 border-b border-slate-200 justify-between">
+        <div className="flex items-center">
+          <button onClick={onBack} className="mr-4 p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+            <ArrowLeft size={20} />
+          </button>
+          <div>
+            <h3 className="text-xl font-bold text-slate-800">{source.name}</h3>
+            <p className="text-xs text-slate-500 font-mono flex items-center gap-2">
+              {source.config.url} <span className="bg-slate-100 px-1 rounded text-slate-600">{source.config.branch}</span>
+              {source.config.username && <span className="flex items-center text-slate-400"><User size={10} className="mr-1"/> {source.config.username}</span>}
+            </p>
+          </div>
+        </div>
+        <div className="flex space-x-2 bg-slate-100 p-1 rounded-lg">
+           <button 
+              onClick={() => setActiveTab('explorer')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center ${activeTab === 'explorer' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+           >
+              <FileCode size={14} className="mr-2"/> Explorer
+           </button>
+           <button 
+              onClick={() => setActiveTab('tracked')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center ${activeTab === 'tracked' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+           >
+              <List size={14} className="mr-2"/> Tracked Files ({source.documents.length})
+           </button>
         </div>
       </div>
       
-      <div className="flex-1 flex border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
-        {/* Sidebar Tree */}
-        <div className="w-1/3 border-r border-slate-200 bg-slate-50 overflow-y-auto p-2">
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">Explorer</div>
-          <FileTreeNode node={MOCK_GIT_TREE} onSelect={setSelectedFile} />
-        </div>
+      {activeTab === 'explorer' ? (
+        <div className="flex-1 flex border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+          {/* Sidebar Tree */}
+          <div className="w-1/3 border-r border-slate-200 bg-slate-50 overflow-y-auto p-2">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">Explorer</div>
+            <FileTreeNode node={MOCK_GIT_TREE} onSelect={setSelectedFile} />
+          </div>
 
-        {/* Code View */}
-        <div className="flex-1 bg-white flex flex-col">
-          {selectedFile ? (
-             <>
-                <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 text-sm font-mono text-slate-600 flex items-center">
-                  <FileCode size={14} className="mr-2"/> {selectedFile.name}
-                </div>
-                <div className="flex-1 p-4 overflow-auto bg-[#1e1e1e] text-gray-300 font-mono text-sm leading-relaxed">
-                  <pre>{selectedFile.content}</pre>
-                </div>
-             </>
-          ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
-              <FileCode size={48} className="mb-4 opacity-20" />
-              <p>Select a file from the explorer to view its content.</p>
-            </div>
-          )}
+          {/* Code View */}
+          <div className="flex-1 bg-white flex flex-col">
+            {selectedFile ? (
+               <>
+                  <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 text-sm font-mono text-slate-600 flex items-center">
+                    <FileCode size={14} className="mr-2"/> {selectedFile.name}
+                  </div>
+                  <div className="flex-1 p-4 overflow-auto bg-[#1e1e1e] text-gray-300 font-mono text-sm leading-relaxed">
+                    <pre>{selectedFile.content}</pre>
+                  </div>
+               </>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
+                <FileCode size={48} className="mb-4 opacity-20" />
+                <p>Select a file from the explorer to view its content.</p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+           <table className="w-full text-left text-sm">
+              <thead className="bg-slate-50 border-b border-slate-100 text-slate-500">
+                 <tr>
+                    <th className="p-4 font-medium">File Name</th>
+                    <th className="p-4 font-medium">Status</th>
+                    <th className="p-4 font-medium">Included in Docs</th>
+                 </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                 {source.documents.map(doc => (
+                    <tr key={doc.id} className="hover:bg-slate-50">
+                       <td className="p-4 font-medium text-slate-700">{doc.name}</td>
+                       <td className="p-4">
+                          <span className={`px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-600`}>{doc.parsingStatus}</span>
+                       </td>
+                       <td className="p-4">
+                          <button 
+                             onClick={() => toggleDoc(doc.id)}
+                             className={`flex items-center space-x-2 transition-colors ${doc.isEnabled ? 'text-primary-600' : 'text-slate-300'}`}
+                          >
+                             {doc.isEnabled ? <ToggleRight size={24}/> : <ToggleLeft size={24}/>}
+                             <span className="text-xs text-slate-500 font-medium">{doc.isEnabled ? 'Enabled' : 'Disabled'}</span>
+                          </button>
+                       </td>
+                    </tr>
+                 ))}
+                 {source.documents.length === 0 && (
+                    <tr><td colSpan={3} className="p-8 text-center text-slate-400">No tracked files found.</td></tr>
+                 )}
+              </tbody>
+           </table>
+        </div>
+      )}
     </div>
   );
 };
 
-const GenericDetailView: React.FC<{ source: DataSource, onBack: () => void }> = ({ source, onBack }) => {
-  // Placeholder items for non-Git sources
-  const items = source.documents.map((doc, i) => ({
-     id: doc.id, 
-     title: doc.name,
-     status: doc.parsingStatus,
-     date: doc.lastModified || '2023-10-25'
-  }));
+const GenericDetailView: React.FC<{ 
+  source: DataSource, 
+  onBack: () => void,
+  onUpdateSource: (ds: DataSource) => void
+}> = ({ source, onBack, onUpdateSource }) => {
+  
+  const toggleDoc = (docId: string) => {
+    const updatedDocs = source.documents.map(d => 
+       d.id === docId ? { ...d, isEnabled: !d.isEnabled } : d
+    );
+    onUpdateSource({ ...source, documents: updatedDocs });
+  };
 
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-300">
@@ -165,26 +233,37 @@ const GenericDetailView: React.FC<{ source: DataSource, onBack: () => void }> = 
                <th className="p-4 font-medium">{source.type === 'Jira' ? 'Issue Key' : 'File Name'}</th>
                <th className="p-4 font-medium">Parsing Status</th>
                <th className="p-4 font-medium">Date</th>
+               <th className="p-4 font-medium">Included in Docs</th>
              </tr>
            </thead>
            <tbody className="divide-y divide-slate-100">
-             {items.map(item => (
+             {source.documents.map(item => (
                <tr key={item.id} className="hover:bg-slate-50">
-                 <td className="p-4 font-medium text-slate-700">{item.title}</td>
+                 <td className="p-4 font-medium text-slate-700">{item.name}</td>
                  <td className="p-4">
                    <span className={`px-2 py-1 rounded-full text-xs 
-                     ${item.status === 'Verified' ? 'bg-green-100 text-green-700' : 
-                       item.status === 'ReviewNeeded' ? 'bg-amber-100 text-amber-700' : 
-                       item.status === 'Structured' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-500'}`}>
-                     {item.status}
+                     ${item.parsingStatus === 'Verified' ? 'bg-green-100 text-green-700' : 
+                       item.parsingStatus === 'ReviewNeeded' ? 'bg-amber-100 text-amber-700' : 
+                       item.parsingStatus === 'Structured' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-500'}`}>
+                     {item.parsingStatus}
                    </span>
                  </td>
-                 <td className="p-4 text-slate-500">{item.date}</td>
+                 <td className="p-4 text-slate-500">{item.lastModified || '-'}</td>
+                 <td className="p-4">
+                    <button 
+                       onClick={() => toggleDoc(item.id)}
+                       className={`flex items-center space-x-2 transition-colors ${item.isEnabled ? 'text-primary-600' : 'text-slate-300'}`}
+                       title={item.isEnabled ? 'Click to Disable' : 'Click to Enable'}
+                    >
+                       {item.isEnabled ? <ToggleRight size={24}/> : <ToggleLeft size={24}/>}
+                       <span className="text-xs text-slate-500 font-medium">{item.isEnabled ? 'Enabled' : 'Disabled'}</span>
+                    </button>
+                 </td>
                </tr>
              ))}
-             {items.length === 0 && (
+             {source.documents.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="p-4 text-center text-slate-400">No documents available.</td>
+                  <td colSpan={4} className="p-4 text-center text-slate-400">No documents available.</td>
                 </tr>
              )}
            </tbody>
@@ -635,7 +714,7 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
       const fileName = `upload_${Date.now()}.docx`;
       config.fileName = fileName;
       initialDocs = [
-        { id: `d-${Date.now()}`, name: fileName, type: 'File', parsingStatus: 'Unparsed', size: '2.1 MB', lastModified: 'Just now' }
+        { id: `d-${Date.now()}`, name: fileName, type: 'File', parsingStatus: 'Unparsed', size: '2.1 MB', lastModified: 'Just now', isEnabled: true }
       ];
     } else if (newSourceType === 'Git') {
       config.url = newSourceUrl;
@@ -644,8 +723,8 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
       config.token = gitToken ? '******' : undefined;
       // Mock discovered docs
       initialDocs = [
-        { id: `d-${Date.now()}-1`, name: 'README.md', type: 'Markdown', parsingStatus: 'Unparsed', size: '2KB' },
-        { id: `d-${Date.now()}-2`, name: 'docs/design_spec.pdf', type: 'PDF', parsingStatus: 'Unparsed', size: '1.2MB' }
+        { id: `d-${Date.now()}-1`, name: 'README.md', type: 'Markdown', parsingStatus: 'Unparsed', size: '2KB', isEnabled: true },
+        { id: `d-${Date.now()}-2`, name: 'docs/design_spec.pdf', type: 'PDF', parsingStatus: 'Unparsed', size: '1.2MB', isEnabled: true }
       ];
     } else if (newSourceType === 'Jira') {
       config.url = newSourceUrl;
@@ -654,7 +733,7 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
       config.projectKey = selectedJiraProject;
       // Mock Jira Doc
       initialDocs = [
-        { id: `d-${Date.now()}`, name: `Jira Issues (${selectedJiraProject})`, type: 'Issue Set', parsingStatus: 'Unparsed', size: 'N/A' }
+        { id: `d-${Date.now()}`, name: `Jira Issues (${selectedJiraProject})`, type: 'Issue Set', parsingStatus: 'Unparsed', size: 'N/A', isEnabled: true }
       ];
     }
 
@@ -749,14 +828,22 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
     }
   };
 
+  const handleUpdateSource = (updatedSource: DataSource) => {
+     const updatedProject = {
+       ...project,
+       dataSources: project.dataSources.map(ds => ds.id === updatedSource.id ? updatedSource : ds)
+     };
+     onUpdateProject(updatedProject);
+  };
+
   // --- Render Logic ---
 
   const selectedSource = project.dataSources.find(ds => ds.id === selectedSourceId);
 
   if (selectedSource) {
     return selectedSource.type === 'Git' 
-      ? <GitDetailView source={selectedSource} onBack={() => setSelectedSourceId(null)} /> 
-      : <GenericDetailView source={selectedSource} onBack={() => setSelectedSourceId(null)} />;
+      ? <GitDetailView source={selectedSource} onBack={() => setSelectedSourceId(null)} onUpdateSource={handleUpdateSource} /> 
+      : <GenericDetailView source={selectedSource} onBack={() => setSelectedSourceId(null)} onUpdateSource={handleUpdateSource} />;
   }
 
   const isAddButtonDisabled = () => {
@@ -1091,6 +1178,9 @@ const GitFilesModal: React.FC<{
 }> = ({ isOpen, onClose, source, onParse, onReview, getStatusBadge }) => {
   if (!isOpen || !source) return null;
 
+  // Filter enabled documents for browser view
+  const enabledDocuments = source.documents.filter(d => d.isEnabled);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={`Files in ${source.name}`}>
       <div className="max-h-[60vh] overflow-y-auto -mx-6 px-6">
@@ -1103,7 +1193,7 @@ const GitFilesModal: React.FC<{
               </tr>
            </thead>
            <tbody className="divide-y divide-slate-50">
-              {source.documents.map(doc => (
+              {enabledDocuments.map(doc => (
                  <tr key={doc.id} className="hover:bg-slate-50">
                     <td className="px-4 py-3">
                        <div className="flex items-center">
@@ -1126,8 +1216,8 @@ const GitFilesModal: React.FC<{
                     </td>
                  </tr>
               ))}
-              {source.documents.length === 0 && (
-                 <tr><td colSpan={3} className="text-center py-8 text-slate-400">No files found.</td></tr>
+              {enabledDocuments.length === 0 && (
+                 <tr><td colSpan={3} className="text-center py-8 text-slate-400">No enabled files found.</td></tr>
               )}
            </tbody>
         </table>
@@ -1258,7 +1348,7 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
     const verified: { ds: DataSource, doc: DocumentArtifact }[] = [];
     project.dataSources.forEach(ds => {
       ds.documents.forEach(doc => {
-        if (doc.parsingStatus === 'Verified') {
+        if (doc.parsingStatus === 'Verified' && doc.isEnabled) {
           verified.push({ ds, doc });
         }
       });
@@ -1284,37 +1374,47 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
      }
   };
 
-  // Flatten Data Sources for Unified List
+  // Flatten Data Sources for Unified List, filtering disabled documents
   const flatItems = React.useMemo(() => {
      const items: any[] = [];
      project.dataSources.forEach(ds => {
+        if (!ds.isEnabled) return; // Skip if entire source is disabled
+
         if (ds.type === 'Git') {
-           // Treat Git Repo as single record
+           // Treat Git Repo as single record if at least one doc is enabled, OR just show it
+           // BUT logic: user wants to hide disabled files. 
+           // If Git Repo is "The Item", does disabling files hide the repo?
+           // Probably not. But the "Browse Files" should only show enabled ones.
+           // However, if we list individual tracked docs for git? The previous implementation listed the Repo as one line.
+           // If we stick to "Repo as one line", then disabling individual files inside it only affects what happens when you "Browse" or "Search".
+           // Let's assume the Repo line is always visible if Source is enabled.
            items.push({
               id: ds.id,
               isGit: true,
               name: ds.name,
               sourceName: 'Git Repository',
               type: 'Repository',
-              size: `${ds.documents.length} Files`,
+              size: `${ds.documents.filter(d => d.isEnabled).length} Enabled Files`,
               status: ds.status,
               original: ds
            });
         } else {
            // Treat others as individual documents
            ds.documents.forEach(doc => {
-              items.push({
-                 id: doc.id,
-                 isGit: false,
-                 name: doc.name,
-                 sourceName: ds.name,
-                 type: doc.type,
-                 size: doc.size || '-',
-                 status: doc.parsingStatus,
-                 dsId: ds.id,
-                 original: doc,
-                 sourceType: ds.type
-              });
+              if (doc.isEnabled) {
+                  items.push({
+                     id: doc.id,
+                     isGit: false,
+                     name: doc.name,
+                     sourceName: ds.name,
+                     type: doc.type,
+                     size: doc.size || '-',
+                     status: doc.parsingStatus,
+                     dsId: ds.id,
+                     original: doc,
+                     sourceType: ds.type
+                  });
+              }
            });
         }
      });

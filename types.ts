@@ -26,6 +26,7 @@ export interface DocumentArtifact {
   size?: string;
   lastModified?: string;
   parsingStatus: ParsingStatus;
+  isEnabled: boolean;
 }
 
 export interface DataSource {

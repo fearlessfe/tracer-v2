@@ -29,9 +29,9 @@ const INITIAL_PROJECTS: Project[] = [
         lastSync: '10 mins ago',
         config: { url: 'https://github.com/company/adas-core.git', branch: 'main' },
         documents: [
-          { id: 'doc-1-1', name: 'README.md', type: 'Markdown', size: '4 KB', lastModified: '2023-10-20', parsingStatus: 'Verified' },
-          { id: 'doc-1-2', name: 'docs/architecture_spec.md', type: 'Markdown', size: '12 KB', lastModified: '2023-10-18', parsingStatus: 'ReviewNeeded' },
-          { id: 'doc-1-3', name: 'src/radar_control.c', type: 'Source Code', size: '45 KB', lastModified: '2023-10-22', parsingStatus: 'Unparsed' }
+          { id: 'doc-1-1', name: 'README.md', type: 'Markdown', size: '4 KB', lastModified: '2023-10-20', parsingStatus: 'Verified', isEnabled: true },
+          { id: 'doc-1-2', name: 'docs/architecture_spec.md', type: 'Markdown', size: '12 KB', lastModified: '2023-10-18', parsingStatus: 'ReviewNeeded', isEnabled: true },
+          { id: 'doc-1-3', name: 'src/radar_control.c', type: 'Source Code', size: '45 KB', lastModified: '2023-10-22', parsingStatus: 'Unparsed', isEnabled: true }
         ]
       },
       {
@@ -43,7 +43,7 @@ const INITIAL_PROJECTS: Project[] = [
         lastSync: '1 hour ago',
         config: { url: 'https://jira.company.com/projects/ADAS', projectKey: 'ADAS' },
         documents: [
-          { id: 'doc-2-1', name: 'ADAS Requirements (All)', type: 'Issue Query', size: '142 Issues', lastModified: 'Today', parsingStatus: 'Unparsed' }
+          { id: 'doc-2-1', name: 'ADAS Requirements (All)', type: 'Issue Query', size: '142 Issues', lastModified: 'Today', parsingStatus: 'Unparsed', isEnabled: true }
         ]
       },
       {
@@ -55,7 +55,7 @@ const INITIAL_PROJECTS: Project[] = [
         lastSync: '2 hours ago',
         config: { fileName: 'System_Architecture_Spec_v2.docx' },
         documents: [
-          { id: 'doc-3-1', name: 'System_Architecture_Spec_v2.docx', type: 'Word Doc', size: '2.4 MB', lastModified: 'Yesterday', parsingStatus: 'ReviewNeeded' }
+          { id: 'doc-3-1', name: 'System_Architecture_Spec_v2.docx', type: 'Word Doc', size: '2.4 MB', lastModified: 'Yesterday', parsingStatus: 'ReviewNeeded', isEnabled: true }
         ]
       }
     ]
