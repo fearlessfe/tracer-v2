@@ -57,19 +57,19 @@ const FileTreeNode = ({ node, onSelect, depth = 0 }: { node: any, onSelect: (nod
   return (
     <div className="select-none">
       <div 
-        className={`flex items-center py-1 px-2 hover:bg-slate-100 cursor-pointer ${depth === 0 ? 'hidden' : ''}`} 
+        className={`flex items-center py-1 px-2 hover:bg-gray-100 cursor-pointer ${depth === 0 ? 'hidden' : ''}`} 
         style={{ paddingLeft: `${depth * 16}px` }}
         onClick={handleToggle}
       >
         {node.type === 'folder' && (
-          <span className="mr-1 text-slate-400">
+          <span className="mr-1 text-gray-400">
             {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </span>
         )}
-        <span className={`mr-2 ${node.type === 'folder' ? 'text-blue-400' : 'text-slate-500'}`}>
+        <span className={`mr-2 ${node.type === 'folder' ? 'text-blue-400' : 'text-gray-500'}`}>
           {node.type === 'folder' ? <Folder size={16} /> : <FileCode size={16} />}
         </span>
-        <span className={`text-sm ${node.type === 'file' ? 'text-slate-700' : 'font-medium text-slate-800'}`}>{node.name}</span>
+        <span className={`text-sm ${node.type === 'file' ? 'text-gray-700' : 'font-medium text-gray-800'}`}>{node.name}</span>
       </div>
       
       {/* Render children if folder is open */}
@@ -103,29 +103,29 @@ const GitDetailView: React.FC<{
 
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-300">
-      <div className="flex items-center mb-4 pb-4 border-b border-slate-200 justify-between">
+      <div className="flex items-center mb-4 pb-4 border-b border-gray-200 justify-between">
         <div className="flex items-center">
-          <button onClick={onBack} className="mr-4 p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+          <button onClick={onBack} className="mr-4 p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h3 className="text-xl font-bold text-slate-800">{source.name}</h3>
-            <p className="text-xs text-slate-500 font-mono flex items-center gap-2">
-              {source.config.url} <span className="bg-slate-100 px-1 rounded text-slate-600">{source.config.branch}</span>
-              {source.config.username && <span className="flex items-center text-slate-400"><User size={10} className="mr-1"/> {source.config.username}</span>}
+            <h3 className="text-xl font-bold text-gray-800">{source.name}</h3>
+            <p className="text-xs text-gray-500 font-mono flex items-center gap-2">
+              {source.config.url} <span className="bg-gray-100 px-1 rounded text-gray-600">{source.config.branch}</span>
+              {source.config.username && <span className="flex items-center text-gray-400"><User size={10} className="mr-1"/> {source.config.username}</span>}
             </p>
           </div>
         </div>
-        <div className="flex space-x-2 bg-slate-100 p-1 rounded-lg">
+        <div className="flex space-x-2 bg-gray-100 p-1 rounded-lg">
            <button 
               onClick={() => setActiveTab('explorer')}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center ${activeTab === 'explorer' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center ${activeTab === 'explorer' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
            >
               <FileCode size={14} className="mr-2"/> Explorer
            </button>
            <button 
               onClick={() => setActiveTab('tracked')}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center ${activeTab === 'tracked' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center ${activeTab === 'tracked' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
            >
               <List size={14} className="mr-2"/> Tracked Files ({source.documents.length})
            </button>
@@ -133,10 +133,10 @@ const GitDetailView: React.FC<{
       </div>
       
       {activeTab === 'explorer' ? (
-        <div className="flex-1 flex border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+        <div className="flex-1 flex border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
           {/* Sidebar Tree */}
-          <div className="w-1/3 border-r border-slate-200 bg-slate-50 overflow-y-auto p-2">
-            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">Explorer</div>
+          <div className="w-1/3 border-r border-gray-200 bg-gray-50 overflow-y-auto p-2">
+            <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 px-2">Explorer</div>
             <FileTreeNode node={MOCK_GIT_TREE} onSelect={setSelectedFile} />
           </div>
 
@@ -144,7 +144,7 @@ const GitDetailView: React.FC<{
           <div className="flex-1 bg-white flex flex-col">
             {selectedFile ? (
                <>
-                  <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 text-sm font-mono text-slate-600 flex items-center">
+                  <div className="bg-gray-100 px-4 py-2 border-b border-gray-200 text-sm font-mono text-gray-600 flex items-center">
                     <FileCode size={14} className="mr-2"/> {selectedFile.name}
                   </div>
                   <div className="flex-1 p-4 overflow-auto bg-[#1e1e1e] text-gray-300 font-mono text-sm leading-relaxed">
@@ -152,7 +152,7 @@ const GitDetailView: React.FC<{
                   </div>
                </>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
+              <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
                 <FileCode size={48} className="mb-4 opacity-20" />
                 <p>Select a file from the explorer to view its content.</p>
               </div>
@@ -160,35 +160,35 @@ const GitDetailView: React.FC<{
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
            <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 border-b border-slate-100 text-slate-500">
+              <thead className="bg-gray-50 border-b border-gray-100 text-gray-500">
                  <tr>
                     <th className="p-4 font-medium">File Name</th>
                     <th className="p-4 font-medium">Status</th>
                     <th className="p-4 font-medium">Included in Docs</th>
                  </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-gray-100">
                  {source.documents.map(doc => (
-                    <tr key={doc.id} className="hover:bg-slate-50">
-                       <td className="p-4 font-medium text-slate-700">{doc.name}</td>
+                    <tr key={doc.id} className="hover:bg-gray-50">
+                       <td className="p-4 font-medium text-gray-700">{doc.name}</td>
                        <td className="p-4">
-                          <span className={`px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-600`}>{doc.parsingStatus}</span>
+                          <span className={`px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-600`}>{doc.parsingStatus}</span>
                        </td>
                        <td className="p-4">
                           <button 
                              onClick={() => toggleDoc(doc.id)}
-                             className={`flex items-center space-x-2 transition-colors ${doc.isEnabled ? 'text-primary-600' : 'text-slate-300'}`}
+                             className={`flex items-center space-x-2 transition-colors ${doc.isEnabled ? 'text-primary-600' : 'text-gray-300'}`}
                           >
                              {doc.isEnabled ? <ToggleRight size={24}/> : <ToggleLeft size={24}/>}
-                             <span className="text-xs text-slate-500 font-medium">{doc.isEnabled ? 'Enabled' : 'Disabled'}</span>
+                             <span className="text-xs text-gray-500 font-medium">{doc.isEnabled ? 'Enabled' : 'Disabled'}</span>
                           </button>
                        </td>
                     </tr>
                  ))}
                  {source.documents.length === 0 && (
-                    <tr><td colSpan={3} className="p-8 text-center text-slate-400">No tracked files found.</td></tr>
+                    <tr><td colSpan={3} className="p-8 text-center text-gray-400">No tracked files found.</td></tr>
                  )}
               </tbody>
            </table>
@@ -213,22 +213,22 @@ const GenericDetailView: React.FC<{
 
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-300">
-      <div className="flex items-center mb-4 pb-4 border-b border-slate-200">
-        <button onClick={onBack} className="mr-4 p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+      <div className="flex items-center mb-4 pb-4 border-b border-gray-200">
+        <button onClick={onBack} className="mr-4 p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h3 className="text-xl font-bold text-slate-800">{source.name}</h3>
-          <p className="text-xs text-slate-500 flex items-center gap-2">
+          <h3 className="text-xl font-bold text-gray-800">{source.name}</h3>
+          <p className="text-xs text-gray-500 flex items-center gap-2">
             {source.type} Data Source Details
             {source.config.projectKey && <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-md font-medium">{source.config.projectKey}</span>}
           </p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <table className="w-full text-left text-sm">
-           <thead className="bg-slate-50 border-b border-slate-100 text-slate-500">
+           <thead className="bg-gray-50 border-b border-gray-100 text-gray-500">
              <tr>
                <th className="p-4 font-medium">{source.type === 'Jira' ? 'Issue Key' : 'File Name'}</th>
                <th className="p-4 font-medium">Parsing Status</th>
@@ -236,34 +236,34 @@ const GenericDetailView: React.FC<{
                <th className="p-4 font-medium">Included in Docs</th>
              </tr>
            </thead>
-           <tbody className="divide-y divide-slate-100">
+           <tbody className="divide-y divide-gray-100">
              {source.documents.map(item => (
-               <tr key={item.id} className="hover:bg-slate-50">
-                 <td className="p-4 font-medium text-slate-700">{item.name}</td>
+               <tr key={item.id} className="hover:bg-gray-50">
+                 <td className="p-4 font-medium text-gray-700">{item.name}</td>
                  <td className="p-4">
                    <span className={`px-2 py-1 rounded-full text-xs 
                      ${item.parsingStatus === 'Verified' ? 'bg-green-100 text-green-700' : 
                        item.parsingStatus === 'ReviewNeeded' ? 'bg-amber-100 text-amber-700' : 
-                       item.parsingStatus === 'Structured' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-500'}`}>
+                       item.parsingStatus === 'Structured' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-500'}`}>
                      {item.parsingStatus}
                    </span>
                  </td>
-                 <td className="p-4 text-slate-500">{item.lastModified || '-'}</td>
+                 <td className="p-4 text-gray-500">{item.lastModified || '-'}</td>
                  <td className="p-4">
                     <button 
                        onClick={() => toggleDoc(item.id)}
-                       className={`flex items-center space-x-2 transition-colors ${item.isEnabled ? 'text-primary-600' : 'text-slate-300'}`}
+                       className={`flex items-center space-x-2 transition-colors ${item.isEnabled ? 'text-primary-600' : 'text-gray-300'}`}
                        title={item.isEnabled ? 'Click to Disable' : 'Click to Enable'}
                     >
                        {item.isEnabled ? <ToggleRight size={24}/> : <ToggleLeft size={24}/>}
-                       <span className="text-xs text-slate-500 font-medium">{item.isEnabled ? 'Enabled' : 'Disabled'}</span>
+                       <span className="text-xs text-gray-500 font-medium">{item.isEnabled ? 'Enabled' : 'Disabled'}</span>
                     </button>
                  </td>
                </tr>
              ))}
              {source.documents.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="p-4 text-center text-slate-400">No documents available.</td>
+                  <td colSpan={4} className="p-4 text-center text-gray-400">No documents available.</td>
                 </tr>
              )}
            </tbody>
@@ -340,19 +340,19 @@ const ImageReviewModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-6xl h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div>
-            <h2 className="text-lg font-bold text-slate-800 flex items-center">
+            <h2 className="text-lg font-bold text-gray-800 flex items-center">
               <FileText size={20} className="mr-2 text-primary-600"/>
-              Review Parse Results: <span className="ml-1 font-normal text-slate-600">{docName}</span>
+              Review Parse Results: <span className="ml-1 font-normal text-gray-600">{docName}</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-1">Verify and edit image descriptions extracted from the document.</p>
+            <p className="text-xs text-gray-500 mt-1">Verify and edit image descriptions extracted from the document.</p>
           </div>
           <div className="flex space-x-3">
-            <button onClick={onClose} className="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-lg transition-colors font-medium">Cancel</button>
+            <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors font-medium">Cancel</button>
             <button onClick={onSave} className="px-4 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-lg transition-colors font-medium flex items-center">
               <Save size={16} className="mr-2"/> Confirm & Save
             </button>
@@ -363,8 +363,8 @@ const ImageReviewModal: React.FC<{
         <div className="flex-1 flex overflow-hidden">
           
           {/* Left Sidebar - Image List */}
-          <div className="w-80 bg-slate-50 border-r border-slate-200 overflow-y-auto p-4">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Extracted Images ({images.length})</h3>
+          <div className="w-80 bg-gray-50 border-r border-gray-200 overflow-y-auto p-4">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Extracted Images ({images.length})</h3>
             <div className="space-y-3">
               {images.map((img, idx) => (
                 <div 
@@ -373,16 +373,16 @@ const ImageReviewModal: React.FC<{
                   className={`group cursor-pointer p-3 rounded-lg border transition-all hover:shadow-md flex gap-3 ${
                     activeImageId === img.id 
                       ? 'bg-white border-primary-500 ring-1 ring-primary-500 shadow-md' 
-                      : 'bg-white border-slate-200 hover:border-primary-300'
+                      : 'bg-white border-gray-200 hover:border-primary-300'
                   }`}
                 >
-                  <div className="w-16 h-16 bg-slate-100 rounded-md overflow-hidden flex-shrink-0 relative">
+                  <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 relative">
                     <img src={img.src} alt="thumbnail" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"/>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-slate-700 truncate mb-1">Image {idx + 1}</p>
-                    <p className="text-[10px] text-slate-500 line-clamp-2 leading-tight">{img.description}</p>
+                    <p className="text-xs font-semibold text-gray-700 truncate mb-1">Image {idx + 1}</p>
+                    <p className="text-[10px] text-gray-500 line-clamp-2 leading-tight">{img.description}</p>
                   </div>
                 </div>
               ))}
@@ -390,12 +390,12 @@ const ImageReviewModal: React.FC<{
           </div>
 
           {/* Right Side - Document Flow */}
-          <div className="flex-1 overflow-y-auto bg-slate-100 p-8 relative scroll-smooth">
+          <div className="flex-1 overflow-y-auto bg-gray-100 p-8 relative scroll-smooth">
             <div className="max-w-3xl mx-auto bg-white shadow-lg min-h-full p-12 rounded-sm">
               {blocks.map(block => {
                 if (block.type === 'text') {
                   return (
-                    <div key={block.id} className="mb-6 text-slate-800 leading-relaxed text-justify">
+                    <div key={block.id} className="mb-6 text-gray-800 leading-relaxed text-justify">
                        {block.content}
                     </div>
                   );
@@ -405,7 +405,7 @@ const ImageReviewModal: React.FC<{
                       key={block.id} 
                       id={`block-${block.id}`} 
                       className={`mb-8 scroll-mt-8 p-4 rounded-xl border-2 transition-all ${
-                        activeImageId === block.id ? 'border-primary-400 bg-primary-50/30' : 'border-transparent hover:border-slate-200'
+                        activeImageId === block.id ? 'border-primary-400 bg-primary-50/30' : 'border-transparent hover:border-gray-200'
                       }`}
                       onClick={() => setActiveImageId(block.id)}
                     >
@@ -413,17 +413,17 @@ const ImageReviewModal: React.FC<{
                         <img src={block.src} alt="Extracted" className="max-w-full rounded-lg shadow-sm mb-4 max-h-[400px] object-contain" />
                         
                         <div className="w-full max-w-lg">
-                          <label className="flex items-center text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                          <label className="flex items-center text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                             <Edit2 size={12} className="mr-1"/> Image Description (Editable)
                           </label>
                           <textarea 
                             value={block.description}
                             onChange={(e) => handleDescriptionChange(block.id, e.target.value)}
-                            className="w-full p-3 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white shadow-inner"
+                            className="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white shadow-inner"
                             rows={3}
                           />
                           {block.context && (
-                            <p className="mt-2 text-xs text-slate-400 italic">
+                            <p className="mt-2 text-xs text-gray-400 italic">
                               Context: "{block.context}"
                             </p>
                           )}
@@ -525,38 +525,38 @@ const StructureVerificationModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-gray-900/90 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-[95vw] h-[95vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white z-10">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-white z-10">
           <div>
-            <h2 className="text-lg font-bold text-slate-800 flex items-center">
+            <h2 className="text-lg font-bold text-gray-800 flex items-center">
               <LayoutTemplate size={20} className="mr-2 text-primary-600"/>
-              Structure Verification: <span className="ml-1 font-normal text-slate-600">{docName}</span>
+              Structure Verification: <span className="ml-1 font-normal text-gray-600">{docName}</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-1">Verify extracted items and link them to source text.</p>
+            <p className="text-xs text-gray-500 mt-1">Verify extracted items and link them to source text.</p>
           </div>
           <div className="flex items-center space-x-4">
-             <div className="text-xs text-slate-400 mr-4 flex items-center">
+             <div className="text-xs text-gray-400 mr-4 flex items-center">
                 <MousePointerClick size={14} className="mr-1"/> Select blocks on right to create new items
              </div>
-             <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
-               <X size={20} className="text-slate-500"/>
+             <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+               <X size={20} className="text-gray-500"/>
              </button>
           </div>
         </div>
 
         <div className="flex-1 flex overflow-hidden">
           {/* Left Panel: Structured Items */}
-          <div className="w-[400px] bg-slate-50 border-r border-slate-200 flex flex-col">
-            <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-white">
-               <div className="flex items-center text-sm font-medium text-slate-600">
+          <div className="w-[400px] bg-gray-50 border-r border-gray-200 flex flex-col">
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-white">
+               <div className="flex items-center text-sm font-medium text-gray-600">
                  <Filter size={16} className="mr-2"/> Filter:
                </div>
                <select 
                  value={filterType} 
                  onChange={(e) => setFilterType(e.target.value as any)}
-                 className="text-sm border-slate-300 rounded-md border px-2 py-1 focus:ring-primary-500 focus:border-primary-500"
+                 className="text-sm border-gray-300 rounded-md border px-2 py-1 focus:ring-primary-500 focus:border-primary-500"
                >
                  <option value="ALL">All Types</option>
                  <option value="REQ">Requirements</option>
@@ -574,26 +574,26 @@ const StructureVerificationModal: React.FC<{
                   className={`p-4 rounded-lg border cursor-pointer transition-all relative overflow-hidden ${
                     activeItemId === item.id 
                       ? 'bg-white border-primary-500 shadow-md ring-1 ring-primary-500' 
-                      : 'bg-white border-slate-200 hover:border-primary-300 hover:shadow-sm'
+                      : 'bg-white border-gray-200 hover:border-primary-300 hover:shadow-sm'
                   }`}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <span className="font-mono text-xs font-bold text-slate-700">{item.id}</span>
+                    <span className="font-mono text-xs font-bold text-gray-700">{item.id}</span>
                     <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${getBadgeColor(item.type)}`}>
                       {item.type}
                     </span>
                   </div>
-                  <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed">{item.content}</p>
+                  <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">{item.content}</p>
                 </div>
               ))}
               {filteredItems.length === 0 && (
-                <div className="text-center py-10 text-slate-400 text-sm">No items found.</div>
+                <div className="text-center py-10 text-gray-400 text-sm">No items found.</div>
               )}
             </div>
 
             {/* Creation Toolbar (visible when blocks selected) */}
             {selectedBlockIds.length > 0 && (
-               <div className="p-4 border-t border-slate-200 bg-primary-50 animate-in slide-in-from-bottom-2">
+               <div className="p-4 border-t border-gray-200 bg-primary-50 animate-in slide-in-from-bottom-2">
                   {!isCreating ? (
                     <button 
                       onClick={() => setIsCreating(true)}
@@ -607,7 +607,7 @@ const StructureVerificationModal: React.FC<{
                           <select 
                              value={newItemType}
                              onChange={(e) => setNewItemType(e.target.value as StructureType)}
-                             className="flex-1 text-sm rounded border-slate-300 p-2"
+                             className="flex-1 text-sm rounded border-gray-300 p-2"
                           >
                              <option value="REQ">REQ</option>
                              <option value="ARCH">ARCH</option>
@@ -619,11 +619,11 @@ const StructureVerificationModal: React.FC<{
                              placeholder="ID (Optional)" 
                              value={newItemId} 
                              onChange={(e) => setNewItemId(e.target.value)}
-                             className="flex-1 text-sm rounded border-slate-300 p-2"
+                             className="flex-1 text-sm rounded border-gray-300 p-2"
                           />
                        </div>
                        <div className="flex gap-2">
-                          <button onClick={() => setIsCreating(false)} className="flex-1 py-1.5 text-sm text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-50">Cancel</button>
+                          <button onClick={() => setIsCreating(false)} className="flex-1 py-1.5 text-sm text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50">Cancel</button>
                           <button onClick={handleCreateItem} className="flex-1 py-1.5 text-sm text-white bg-primary-600 rounded hover:bg-primary-700 shadow-sm">Confirm</button>
                        </div>
                     </div>
@@ -633,7 +633,7 @@ const StructureVerificationModal: React.FC<{
           </div>
 
           {/* Right Panel: Document Content */}
-          <div className="flex-1 overflow-y-auto bg-slate-100 p-8 relative scroll-smooth">
+          <div className="flex-1 overflow-y-auto bg-gray-100 p-8 relative scroll-smooth">
              <div className="max-w-3xl mx-auto bg-white shadow-lg min-h-full p-12 rounded-sm relative">
                 {MOCK_PARSED_CONTENT.map(block => {
                    const isLinked = activeItemId ? items.find(i => i.id === activeItemId)?.linkedBlockIds.includes(block.id) : false;
@@ -646,14 +646,14 @@ const StructureVerificationModal: React.FC<{
                         onClick={() => handleBlockClick(block.id)}
                         className={`transition-all duration-300 rounded px-2 -mx-2 cursor-pointer border-2
                            ${isSelected ? 'bg-primary-100/50 border-primary-400' : 
-                             isLinked ? 'bg-yellow-100/50 border-yellow-400 scale-[1.01] shadow-sm' : 'border-transparent hover:bg-slate-50'}
+                             isLinked ? 'bg-yellow-100/50 border-yellow-400 scale-[1.01] shadow-sm' : 'border-transparent hover:bg-gray-50'}
                         `}
                       >
                         {block.type === 'text' ? (
-                           <p className="mb-4 text-slate-800 leading-relaxed text-justify pointer-events-none">{block.content}</p>
+                           <p className="mb-4 text-gray-800 leading-relaxed text-justify pointer-events-none">{block.content}</p>
                         ) : (
                            <div className="mb-6 flex justify-center pointer-events-none">
-                              <img src={block.src} className="max-h-[200px] rounded border border-slate-200" alt="content"/>
+                              <img src={block.src} className="max-h-[200px] rounded border border-gray-200" alt="content"/>
                            </div>
                         )}
                       </div>
@@ -664,8 +664,8 @@ const StructureVerificationModal: React.FC<{
         </div>
         
         {/* Footer */}
-        <div className="bg-white border-t border-slate-200 px-6 py-4 flex justify-end space-x-3">
-           <button onClick={onClose} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium">Cancel</button>
+        <div className="bg-white border-t border-gray-200 px-6 py-4 flex justify-end space-x-3">
+           <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Cancel</button>
            <button onClick={onSave} className="px-6 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg shadow font-medium flex items-center">
              <CheckCircle2 size={18} className="mr-2"/> Complete Verification
            </button>
@@ -861,8 +861,8 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
     <div className="p-8 max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4">
       <div className="flex justify-between items-center mb-8">
         <div>
-           <h2 className="text-2xl font-bold text-slate-800">Data Source Management</h2>
-           <p className="text-slate-500">Integrate and sync data from external tools (Git, Jira, Local Files).</p>
+           <h2 className="text-2xl font-bold text-gray-800">Data Source Management</h2>
+           <p className="text-gray-500">Integrate and sync data from external tools (Git, Jira, Local Files).</p>
         </div>
         <button 
           onClick={() => setIsAddModalOpen(true)}
@@ -874,7 +874,7 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
 
       <div className="grid gap-4">
         {project.dataSources.length === 0 ? (
-           <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 bg-slate-50">
+           <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 bg-gray-50">
               <Database size={48} className="mx-auto mb-4 opacity-20"/>
               <p>No data sources configured.</p>
            </div>
@@ -883,9 +883,9 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
             <div 
               key={s.id} 
               onClick={() => handleRowClick(s)}
-              className={`bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between transition-all
+              className={`bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between transition-all
                 ${s.status === 'Synced' ? 'cursor-pointer hover:border-primary-300 hover:shadow-md' : 'opacity-80 cursor-not-allowed'}
-                ${!s.isEnabled ? 'grayscale bg-slate-50' : ''}
+                ${!s.isEnabled ? 'grayscale bg-gray-50' : ''}
               `}
             >
               <div className="flex items-center space-x-4">
@@ -893,14 +893,14 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
                    {s.type === 'Git' ? <Github size={24} /> : (s.type === 'Jira' ? <Globe size={24}/> : <HardDrive size={24} />)}
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800 flex items-center">
+                  <h4 className="font-bold text-gray-800 flex items-center">
                     {s.name}
-                    {!s.isEnabled && <span className="ml-2 text-xs bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full">Disabled</span>}
+                    {!s.isEnabled && <span className="ml-2 text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">Disabled</span>}
                     {s.config.projectKey && <span className="ml-2 text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full border border-blue-200">{s.config.projectKey}</span>}
                   </h4>
                   <div className="flex items-center text-xs space-x-3 mt-1">
-                    <span className="font-semibold text-slate-500">{s.type}</span>
-                    <span className="text-slate-300">|</span>
+                    <span className="font-semibold text-gray-500">{s.type}</span>
+                    <span className="text-gray-300">|</span>
                     <div className="flex items-center">
                        {s.status === 'Syncing' ? (
                          <RefreshCw size={12} className="mr-1 animate-spin text-blue-500"/>
@@ -911,8 +911,8 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
                          {s.status === 'Syncing' ? 'Syncing...' : 'Synced'}
                        </span>
                     </div>
-                    <span className="text-slate-300">|</span>
-                    <span className="text-slate-400">Last updated: {s.lastSync}</span>
+                    <span className="text-gray-300">|</span>
+                    <span className="text-gray-400">Last updated: {s.lastSync}</span>
                   </div>
                 </div>
               </div>
@@ -921,7 +921,7 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
                  {/* Toggle Switch */}
                  <button 
                     onClick={(e) => handleToggleEnabled(e, s.id)}
-                    className={`transition-colors ${s.isEnabled ? 'text-primary-600' : 'text-slate-400'}`}
+                    className={`transition-colors ${s.isEnabled ? 'text-primary-600' : 'text-gray-400'}`}
                     title={s.isEnabled ? 'Disable Source' : 'Enable Source'}
                  >
                     {s.isEnabled ? <ToggleRight size={32} /> : <ToggleLeft size={32} />}
@@ -929,14 +929,14 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
                  
                  <button 
                    onClick={(e) => handleDelete(e, s.id)}
-                   className="p-2 hover:bg-red-50 rounded-full text-slate-400 hover:text-red-500 transition-colors"
+                   className="p-2 hover:bg-red-50 rounded-full text-gray-400 hover:text-red-500 transition-colors"
                    title="Delete Source"
                  >
                    <Trash2 size={18}/>
                  </button>
                  
                  {s.status === 'Synced' && (
-                   <ChevronRight size={20} className="text-slate-300" />
+                   <ChevronRight size={20} className="text-gray-300" />
                  )}
               </div>
             </div>
@@ -951,7 +951,7 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
       >
         <form onSubmit={handleAddSource} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Source Type</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Source Type</label>
             <div className="grid grid-cols-3 gap-2">
               {(['Local', 'Git', 'Jira'] as DataSourceType[]).map(t => (
                 <button
@@ -961,7 +961,7 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
                   className={`py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
                     newSourceType === t 
                       ? 'bg-primary-50 border-primary-500 text-primary-700' 
-                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
                   }`}
                 >
                   {t}
@@ -971,13 +971,13 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Source Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Source Name</label>
             <input 
               type="text" 
               required
               value={newSourceName}
               onChange={(e) => setNewSourceName(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-500 outline-none"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none"
               placeholder={newSourceType === 'Git' ? 'e.g. Core Repo' : 'e.g. Requirements Doc'}
             />
           </div>
@@ -986,53 +986,53 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
           {newSourceType === 'Git' && (
             <div className="space-y-3 animate-in fade-in">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Repository URL</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Repository URL</label>
                 <div className="relative">
-                  <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+                  <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                   <input 
                     type="url" 
                     required
                     value={newSourceUrl}
                     onChange={(e) => setNewSourceUrl(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none"
                     placeholder="https://github.com/user/repo.git"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Branch</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Branch</label>
                 <input 
                   type="text" 
                   required
                   value={newSourceBranch}
                   onChange={(e) => setNewSourceBranch(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-500 outline-none"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none"
                   placeholder="main"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Username (Optional)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Username (Optional)</label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                     <input 
                       type="text" 
                       value={gitUsername}
                       onChange={(e) => setGitUsername(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none"
                       placeholder="git-user"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Token / Password</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Token / Password</label>
                   <div className="relative">
-                    <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+                    <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                     <input 
                       type="password" 
                       value={gitToken}
                       onChange={(e) => setGitToken(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none"
                       placeholder="ghp_..."
                     />
                   </div>
@@ -1045,16 +1045,16 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
           {newSourceType === 'Jira' && (
              <div className="space-y-3 animate-in fade-in">
                <div>
-                 <label className="block text-sm font-medium text-slate-700 mb-1">Jira URL</label>
+                 <label className="block text-sm font-medium text-gray-700 mb-1">Jira URL</label>
                  <div className="relative">
-                    <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+                    <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                     <input 
                       type="url" 
                       required
                       value={newSourceUrl}
                       onChange={(e) => setNewSourceUrl(e.target.value)}
                       disabled={isJiraConnected}
-                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-500 outline-none disabled:bg-slate-100 disabled:text-slate-500"
+                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none disabled:bg-gray-100 disabled:text-gray-500"
                       placeholder="https://company.atlassian.net"
                     />
                  </div>
@@ -1062,31 +1062,31 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
                
                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <div className="relative">
-                      <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+                      <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                       <input 
                         type="email" 
                         required
                         value={jiraEmail}
                         onChange={(e) => setJiraEmail(e.target.value)}
                         disabled={isJiraConnected}
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-500 outline-none disabled:bg-slate-100"
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none disabled:bg-gray-100"
                         placeholder="user@company.com"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">API Token</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">API Token</label>
                     <div className="relative">
-                      <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
+                      <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                       <input 
                         type="password" 
                         required
                         value={jiraToken}
                         onChange={(e) => setJiraToken(e.target.value)}
                         disabled={isJiraConnected}
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-500 outline-none disabled:bg-slate-100"
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none disabled:bg-gray-100"
                         placeholder="Atlassian Token"
                       />
                     </div>
@@ -1098,7 +1098,7 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
                     type="button"
                     onClick={handleConnectJira}
                     disabled={isConnectingJira || !newSourceUrl || !jiraEmail || !jiraToken}
-                    className="w-full py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed"
                  >
                     {isConnectingJira ? <Loader2 size={18} className="animate-spin mr-2"/> : <Search size={18} className="mr-2"/>}
                     {isConnectingJira ? 'Connecting to Jira...' : 'Verify & Fetch Projects'}
@@ -1106,7 +1106,7 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
                ) : (
                  <div className="animate-in zoom-in duration-200">
                     <div className="flex items-center justify-between mb-2">
-                       <label className="block text-sm font-medium text-slate-700">Select Jira Project</label>
+                       <label className="block text-sm font-medium text-gray-700">Select Jira Project</label>
                        <button type="button" onClick={() => setIsJiraConnected(false)} className="text-xs text-blue-500 hover:underline">Change Credentials</button>
                     </div>
                     <select 
@@ -1131,19 +1131,19 @@ export const DataSources: React.FC<DataSourcesProps> = ({ project, onUpdateProje
           {/* --- LOCAL FORM --- */}
           {newSourceType === 'Local' && (
              <div>
-               <label className="block text-sm font-medium text-slate-700 mb-1">Upload File</label>
-               <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 transition-colors cursor-pointer">
+               <label className="block text-sm font-medium text-gray-700 mb-1">Upload File</label>
+               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors cursor-pointer">
                   <FileText size={32} className="mb-2"/>
                   <span className="text-sm">Click to select a file (Mock)</span>
                </div>
              </div>
           )}
 
-          <div className="pt-4 flex justify-end space-x-3 border-t border-slate-100 mt-4">
+          <div className="pt-4 flex justify-end space-x-3 border-t border-gray-100 mt-4">
             <button 
               type="button" 
               onClick={() => { setIsAddModalOpen(false); resetForm(); }}
-              className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors font-medium"
+              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium"
             >
               Cancel
             </button>
@@ -1185,22 +1185,22 @@ const GitFilesModal: React.FC<{
     <Modal isOpen={isOpen} onClose={onClose} title={`Files in ${source.name}`}>
       <div className="max-h-[60vh] overflow-y-auto -mx-6 px-6">
         <table className="w-full text-left">
-           <thead className="bg-white border-b border-slate-100 sticky top-0 z-10">
+           <thead className="bg-white border-b border-gray-100 sticky top-0 z-10">
               <tr>
-                 <th className="px-4 py-3 text-xs font-semibold text-slate-500">File</th>
-                 <th className="px-4 py-3 text-xs font-semibold text-slate-500">Status</th>
-                 <th className="px-4 py-3 text-xs font-semibold text-slate-500 text-right">Actions</th>
+                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">File</th>
+                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">Status</th>
+                 <th className="px-4 py-3 text-xs font-semibold text-gray-500 text-right">Actions</th>
               </tr>
            </thead>
-           <tbody className="divide-y divide-slate-50">
+           <tbody className="divide-y divide-gray-50">
               {enabledDocuments.map(doc => (
-                 <tr key={doc.id} className="hover:bg-slate-50">
+                 <tr key={doc.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                        <div className="flex items-center">
-                          <FileCode size={14} className="text-slate-400 mr-2"/>
-                          <span className="text-sm text-slate-700">{doc.name}</span>
+                          <FileCode size={14} className="text-gray-400 mr-2"/>
+                          <span className="text-sm text-gray-700">{doc.name}</span>
                        </div>
-                       <div className="text-[10px] text-slate-400 ml-6">{doc.size}</div>
+                       <div className="text-[10px] text-gray-400 ml-6">{doc.size}</div>
                     </td>
                     <td className="px-4 py-3">{getStatusBadge(doc.parsingStatus)}</td>
                     <td className="px-4 py-3 text-right">
@@ -1209,7 +1209,7 @@ const GitFilesModal: React.FC<{
                        ) : doc.parsingStatus === 'ReviewNeeded' ? (
                           <button onClick={() => onReview(source.id, doc)} className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-1 rounded hover:bg-amber-100 transition-colors">Review</button>
                        ) : doc.parsingStatus === 'Parsing' ? (
-                          <span className="text-xs text-slate-400 italic">Waiting...</span>
+                          <span className="text-xs text-gray-400 italic">Waiting...</span>
                        ) : (
                           <span className="text-xs text-green-600 flex justify-end items-center"><CheckCircle2 size={12} className="mr-1"/> Done</span>
                        )}
@@ -1217,13 +1217,13 @@ const GitFilesModal: React.FC<{
                  </tr>
               ))}
               {enabledDocuments.length === 0 && (
-                 <tr><td colSpan={3} className="text-center py-8 text-slate-400">No enabled files found.</td></tr>
+                 <tr><td colSpan={3} className="text-center py-8 text-gray-400">No enabled files found.</td></tr>
               )}
            </tbody>
         </table>
       </div>
-      <div className="mt-4 flex justify-end pt-4 border-t border-slate-100">
-        <button onClick={onClose} className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-200">Close</button>
+      <div className="mt-4 flex justify-end pt-4 border-t border-gray-100">
+        <button onClick={onClose} className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-200">Close</button>
       </div>
     </Modal>
   );
@@ -1362,15 +1362,15 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
       case 'ReviewNeeded': return <span className="px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-700 font-medium flex items-center w-fit gap-1"><Eye size={12}/> Review Needed</span>;
       case 'Parsing': return <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-medium flex items-center w-fit gap-1"><Loader2 size={12} className="animate-spin"/> Parsing...</span>;
       case 'Structured': return <span className="px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-700 font-medium flex items-center w-fit gap-1"><LayoutTemplate size={12}/> Structured</span>;
-      default: return <span className="px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-500 font-medium w-fit">Unparsed</span>;
+      default: return <span className="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-500 font-medium w-fit">Unparsed</span>;
     }
   };
 
   const getIcon = (type: DataSourceType) => {
      switch(type) {
-        case 'Git': return <Github size={18} className="text-slate-700"/>;
+        case 'Git': return <Github size={18} className="text-gray-700"/>;
         case 'Jira': return <Globe size={18} className="text-blue-600"/>;
-        default: return <FileText size={18} className="text-slate-500"/>;
+        default: return <FileText size={18} className="text-gray-500"/>;
      }
   };
 
@@ -1381,13 +1381,6 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
         if (!ds.isEnabled) return; // Skip if entire source is disabled
 
         if (ds.type === 'Git') {
-           // Treat Git Repo as single record if at least one doc is enabled, OR just show it
-           // BUT logic: user wants to hide disabled files. 
-           // If Git Repo is "The Item", does disabling files hide the repo?
-           // Probably not. But the "Browse Files" should only show enabled ones.
-           // However, if we list individual tracked docs for git? The previous implementation listed the Repo as one line.
-           // If we stick to "Repo as one line", then disabling individual files inside it only affects what happens when you "Browse" or "Search".
-           // Let's assume the Repo line is always visible if Source is enabled.
            items.push({
               id: ds.id,
               isGit: true,
@@ -1425,8 +1418,8 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
     <div className="p-8 max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4">
       <div className="flex justify-between items-center mb-8">
           <div>
-             <h2 className="text-2xl font-bold text-slate-800">Document Management</h2>
-             <p className="text-slate-500">Unified view of artifacts from all project data sources.</p>
+             <h2 className="text-2xl font-bold text-gray-800">Document Management</h2>
+             <p className="text-gray-500">Unified view of artifacts from all project data sources.</p>
           </div>
           <button 
             onClick={handleStructureClick}
@@ -1436,40 +1429,40 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
           </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
            <table className="w-full text-left">
-              <thead className="bg-slate-50 border-b border-slate-200">
+              <thead className="bg-gray-50 border-b border-gray-200">
                  <tr>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-1/3">Document / Repository</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Source</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Size</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider w-1/3">Document / Repository</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Source</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Size</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
                  </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-gray-50">
                  {flatItems.map(item => (
-                    <tr key={item.id} className={`hover:bg-slate-50 transition-colors ${item.isGit ? 'bg-slate-50/50' : ''}`}>
+                    <tr key={item.id} className={`hover:bg-gray-50 transition-colors ${item.isGit ? 'bg-gray-50/50' : ''}`}>
                        <td className="px-6 py-4">
                           <div className="flex items-center">
-                             <div className={`p-2 rounded-lg mr-3 ${item.isGit ? 'bg-white border border-slate-200' : 'bg-blue-50 text-blue-600'}`}>
+                             <div className={`p-2 rounded-lg mr-3 ${item.isGit ? 'bg-white border border-gray-200' : 'bg-blue-50 text-blue-600'}`}>
                                 {item.isGit ? <Github size={18} /> : (item.sourceType === 'Jira' ? <Globe size={18} /> : <FileText size={18} />)}
                              </div>
                              <div>
-                                <span className="font-bold text-slate-700 text-sm block">{item.name}</span>
-                                {item.isGit && <span className="text-[10px] text-slate-400 font-mono">{item.original.config.branch} branch</span>}
+                                <span className="font-bold text-gray-700 text-sm block">{item.name}</span>
+                                {item.isGit && <span className="text-[10px] text-gray-400 font-mono">{item.original.config.branch} branch</span>}
                              </div>
                           </div>
                        </td>
-                       <td className="px-6 py-4 text-sm text-slate-500">{item.sourceName}</td>
-                       <td className="px-6 py-4 text-sm text-slate-500">
-                          <span className={`px-2 py-1 rounded border text-xs ${item.isGit ? 'bg-white border-slate-300 text-slate-600' : 'bg-slate-100 border-transparent text-slate-500'}`}>
+                       <td className="px-6 py-4 text-sm text-gray-500">{item.sourceName}</td>
+                       <td className="px-6 py-4 text-sm text-gray-500">
+                          <span className={`px-2 py-1 rounded border text-xs ${item.isGit ? 'bg-white border-gray-300 text-gray-600' : 'bg-gray-100 border-transparent text-gray-500'}`}>
                              {item.type}
                           </span>
                        </td>
-                       <td className="px-6 py-4 text-sm text-slate-500 font-mono text-xs">{item.size}</td>
+                       <td className="px-6 py-4 text-sm text-gray-500 font-mono text-xs">{item.size}</td>
                        <td className="px-6 py-4">
                           {item.isGit ? (
                              <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 font-medium flex items-center w-fit gap-1">
@@ -1483,9 +1476,9 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
                           {item.isGit ? (
                              <button 
                                 onClick={() => handleOpenGitFiles(item.id)}
-                                className="inline-flex items-center px-3 py-1.5 bg-white border border-slate-300 text-slate-700 rounded-lg text-xs font-medium hover:bg-slate-50 hover:border-slate-400 transition-all"
+                                className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-50 hover:border-gray-400 transition-all"
                              >
-                                <FolderOpen size={14} className="mr-1.5 text-slate-400"/> Browse Files
+                                <FolderOpen size={14} className="mr-1.5 text-gray-400"/> Browse Files
                              </button>
                           ) : (
                              <div className="flex justify-end items-center space-x-2">
@@ -1504,9 +1497,9 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
                                     <Eye size={12} className="mr-1"/> Review
                                   </button>
                                 ) : item.status === 'Parsing' ? (
-                                  <span className="text-xs text-slate-400 italic">Processing...</span>
+                                  <span className="text-xs text-gray-400 italic">Processing...</span>
                                 ) : (
-                                  <button className="p-2 text-slate-400 hover:text-blue-600 transition-colors" title="View Details">
+                                  <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors" title="View Details">
                                     <ExternalLink size={16} />
                                   </button>
                                 )}
@@ -1517,7 +1510,7 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
                  ))}
                  {flatItems.length === 0 && (
                     <tr>
-                       <td colSpan={6} className="py-12 text-center text-slate-400">
+                       <td colSpan={6} className="py-12 text-center text-gray-400">
                           <Database size={48} className="mx-auto mb-4 opacity-20"/>
                           <p>No documents found. Add a data source to get started.</p>
                        </td>
@@ -1542,10 +1535,10 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
         title="Select Document to Structure"
       >
          <div className="space-y-4">
-            <p className="text-sm text-slate-600">Only documents with <span className="font-bold text-green-600">Verified</span> parse results can be structured into Requirements, Architecture, or Test Cases.</p>
-            <div className="max-h-60 overflow-y-auto border rounded-lg border-slate-200">
+            <p className="text-sm text-gray-600">Only documents with <span className="font-bold text-green-600">Verified</span> parse results can be structured into Requirements, Architecture, or Test Cases.</p>
+            <div className="max-h-60 overflow-y-auto border rounded-lg border-gray-200">
                {getVerifiedDocs().length === 0 ? (
-                 <div className="p-8 text-center text-slate-400 text-sm">
+                 <div className="p-8 text-center text-gray-400 text-sm">
                     No verified documents available. Please parse and review a document first.
                  </div>
                ) : (
@@ -1553,16 +1546,16 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
                     <div 
                       key={doc.id} 
                       onClick={() => handleSelectDocForStructure(ds.id, doc)}
-                      className="p-3 border-b border-slate-100 last:border-0 hover:bg-slate-50 cursor-pointer flex justify-between items-center group"
+                      className="p-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 cursor-pointer flex justify-between items-center group"
                     >
                        <div className="flex items-center">
-                          <FileText size={16} className="text-slate-400 mr-3 group-hover:text-purple-500"/>
+                          <FileText size={16} className="text-gray-400 mr-3 group-hover:text-purple-500"/>
                           <div>
-                             <div className="text-sm font-medium text-slate-700 group-hover:text-purple-700">{doc.name}</div>
-                             <div className="text-xs text-slate-400">{ds.name}</div>
+                             <div className="text-sm font-medium text-gray-700 group-hover:text-purple-700">{doc.name}</div>
+                             <div className="text-xs text-gray-400">{ds.name}</div>
                           </div>
                        </div>
-                       <ChevronRight size={16} className="text-slate-300 group-hover:text-purple-500"/>
+                       <ChevronRight size={16} className="text-gray-300 group-hover:text-purple-500"/>
                     </div>
                  ))
                )}

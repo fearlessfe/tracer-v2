@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { HashRouter, Routes, Route, Outlet, useParams, Navigate } from 'react-router-dom';
 import { ProjectList } from './pages/ProjectList';
@@ -79,9 +78,9 @@ const ProjectLayout: React.FC<{ projects: Project[] }> = ({ projects }) => {
   if (!project) return <Navigate to="/" />;
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       <Sidebar projectId={project.id} projectName={project.name} />
-      <main className="flex-1 overflow-hidden relative flex flex-col">
+      <main className="flex-1 overflow-hidden relative flex flex-col bg-gray-50">
          <Outlet context={{ project }} />
       </main>
     </div>

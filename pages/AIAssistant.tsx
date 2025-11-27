@@ -35,7 +35,7 @@ const getTypeIcon = (type: TraceType) => {
     case TraceType.DESIGN: return <Box size={16} className="text-purple-500"/>;
     case TraceType.CODE: return <Code size={16} className="text-emerald-500"/>;
     case TraceType.TEST: return <Activity size={16} className="text-amber-500"/>;
-    default: return <FileText size={16} className="text-slate-500"/>;
+    default: return <FileText size={16} className="text-gray-500"/>;
   }
 };
 
@@ -43,9 +43,9 @@ const getStatusColor = (status: string) => {
   switch(status) {
     case 'Verified': return 'bg-green-100 text-green-700';
     case 'Approved': return 'bg-blue-100 text-blue-700';
-    case 'Draft': return 'bg-slate-100 text-slate-600';
+    case 'Draft': return 'bg-gray-100 text-gray-600';
     case 'Failed': return 'bg-red-100 text-red-700';
-    default: return 'bg-slate-100 text-slate-600';
+    default: return 'bg-gray-100 text-gray-600';
   }
 };
 
@@ -53,43 +53,43 @@ const getStatusColor = (status: string) => {
 
 const CitationDetails: React.FC<{ item: KnowledgeItem, onClose: () => void }> = ({ item, onClose }) => {
   return (
-    <div className="w-80 border-l border-slate-200 bg-white h-full shadow-xl animate-in slide-in-from-right-10 flex flex-col">
-      <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-        <h3 className="font-bold text-slate-700 flex items-center">
+    <div className="w-80 border-l border-gray-200 bg-white h-full shadow-xl animate-in slide-in-from-right-10 flex flex-col">
+      <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+        <h3 className="font-bold text-gray-700 flex items-center">
           <span className="mr-2">{getTypeIcon(item.type)}</span>
           Details
         </h3>
-        <button onClick={onClose} className="p-1 hover:bg-slate-200 rounded-full text-slate-400 transition-colors">
+        <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full text-gray-400 transition-colors">
           <X size={18} />
         </button>
       </div>
       <div className="p-6 flex-1 overflow-y-auto">
         <div className="mb-4">
-           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">ID</span>
-           <span className="text-lg font-mono font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">{item.id}</span>
+           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">ID</span>
+           <span className="text-lg font-mono font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded">{item.id}</span>
         </div>
         
         <div className="mb-4">
-           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Name</span>
-           <h4 className="text-md font-semibold text-slate-800 leading-tight">{item.label}</h4>
+           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Name</span>
+           <h4 className="text-md font-semibold text-gray-800 leading-tight">{item.label}</h4>
         </div>
 
         <div className="mb-4">
-           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Status</span>
+           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Status</span>
            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
              {item.status}
            </span>
         </div>
 
         <div className="mb-6">
-           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Description</span>
-           <p className="text-sm text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100">
+           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Description</span>
+           <p className="text-sm text-gray-600 leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100">
              {item.description}
            </p>
         </div>
 
-        <div className="pt-4 border-t border-slate-100">
-           <button className="w-full py-2 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors flex items-center justify-center">
+        <div className="pt-4 border-t border-gray-100">
+           <button className="w-full py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors flex items-center justify-center">
               <ExternalLink size={14} className="mr-2"/> View in Trace Matrix
            </button>
         </div>
@@ -104,7 +104,7 @@ const FormattedMessage: React.FC<{ content: string, onCitationClick: (id: string
   const parts = content.split(regex);
 
   return (
-    <div className="prose prose-sm max-w-none text-slate-700">
+    <div className="prose prose-sm max-w-none text-gray-700">
       {parts.map((part, index) => {
         if (regex.test(part)) {
           // Check if we have this item in knowledge base
@@ -121,7 +121,7 @@ const FormattedMessage: React.FC<{ content: string, onCitationClick: (id: string
               </button>
             );
           }
-          return <span key={index} className="font-mono text-slate-500">{part}</span>;
+          return <span key={index} className="font-mono text-gray-500">{part}</span>;
         }
         
         // Render regular text (handling newlines)
@@ -201,16 +201,16 @@ export const AIAssistant: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full bg-slate-50 overflow-hidden relative">
+    <div className="flex h-full bg-gray-50 overflow-hidden relative">
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col h-full min-w-0">
-        <div className="bg-white border-b border-slate-200 p-4 shadow-sm flex items-center justify-between z-10">
+        <div className="bg-white border-b border-gray-200 p-4 shadow-sm flex items-center justify-between z-10">
           <div className="flex items-center space-x-2">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg text-white">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg text-white shadow-sm">
               <Sparkles size={20} />
             </div>
             <div>
-              <h2 className="font-bold text-slate-800">AutoTrace AI Assistant</h2>
+              <h2 className="font-bold text-gray-800">AutoTrace AI Assistant</h2>
               <p className="text-xs text-green-500 flex items-center font-medium">
                 <span className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></span>
                 Context Aware • Gemini 2.5 Flash
@@ -232,7 +232,7 @@ export const AIAssistant: React.FC = () => {
               className={`flex items-start ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.role === 'model' && (
-                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 mr-2 mt-1 flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-primary-600 mr-2 mt-1 flex-shrink-0 border border-gray-200">
                   <Bot size={18} />
                 </div>
               )}
@@ -240,8 +240,8 @@ export const AIAssistant: React.FC = () => {
               <div 
                 className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-sm ${
                   msg.role === 'user' 
-                    ? 'bg-primary-600 text-white rounded-tr-none' 
-                    : 'bg-white border border-slate-200 rounded-tl-none'
+                    ? 'bg-blue-600 text-white rounded-tr-none' 
+                    : 'bg-white text-gray-700 border border-gray-100 rounded-tl-none'
                 }`}
               >
                 {msg.role === 'user' ? (
@@ -250,13 +250,13 @@ export const AIAssistant: React.FC = () => {
                    <FormattedMessage content={msg.content} onCitationClick={handleCitationClick} />
                 )}
                 
-                <div className={`text-[10px] mt-2 opacity-70 ${msg.role === 'user' ? 'text-blue-100' : 'text-slate-400'}`}>
+                <div className={`text-[10px] mt-2 opacity-70 ${msg.role === 'user' ? 'text-blue-100' : 'text-gray-400'}`}>
                   {new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </div>
               </div>
 
               {msg.role === 'user' && (
-                <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 ml-2 mt-1 flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 ml-2 mt-1 flex-shrink-0">
                   <User size={18} />
                 </div>
               )}
@@ -265,24 +265,24 @@ export const AIAssistant: React.FC = () => {
           {isLoading && (
             <div className="flex justify-start items-center ml-10">
               <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
-              <span className="text-xs text-slate-400 ml-2">Analyzing Project Data...</span>
+              <span className="text-xs text-gray-400 ml-2">Analyzing Project Data...</span>
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="p-4 bg-white border-t border-slate-200">
+        <div className="p-4 bg-white border-t border-gray-200">
           <form onSubmit={handleSend} className="max-w-4xl mx-auto relative">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask: 'Is there a test for REQ-001?' or 'Show me failed tests'"
-              className="w-full pl-4 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition-all shadow-inner"
+              className="w-full pl-4 pr-12 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition-all shadow-inner text-gray-800 placeholder-gray-400"
               disabled={isLoading}
             />
             <button 

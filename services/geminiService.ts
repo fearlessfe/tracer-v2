@@ -1,7 +1,7 @@
+
 import { GoogleGenAI } from "@google/genai";
 
-const apiKey = process.env.API_KEY || '';
-const ai = new GoogleGenAI({ apiKey });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 // Mock context data to feed into the AI so it knows what to cite
 const PROJECT_CONTEXT = `
@@ -36,7 +36,7 @@ export const generateAIResponse = async (
   prompt: string, 
   history: { role: string; content: string }[] = []
 ): Promise<string> => {
-  if (!apiKey) {
+  if (!process.env.API_KEY) {
     return "Error: API Key is missing. Please set the API_KEY environment variable.";
   }
 

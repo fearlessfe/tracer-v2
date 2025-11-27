@@ -30,11 +30,11 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div className="flex justify-between items-center p-4 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200 border border-gray-100">
+        <div className="flex justify-between items-center p-5 border-b border-gray-100">
+          <h3 className="text-lg font-bold text-gray-800">{title}</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100">
             <X size={20} />
           </button>
         </div>
@@ -58,16 +58,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ projectId, projectName }) => {
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-100 flex flex-col h-full shadow-xl">
-      <div className="p-6 border-b border-slate-700">
+    <aside className="w-64 bg-white text-gray-700 flex flex-col h-full border-r border-gray-200">
+      <div className="p-6 border-b border-gray-100">
         <button 
           onClick={() => navigate('/')} 
-          className="flex items-center text-xs text-slate-400 hover:text-white mb-4 transition-colors"
+          className="flex items-center text-xs text-gray-500 hover:text-primary-600 mb-4 transition-colors font-medium"
         >
           <ChevronLeft size={14} className="mr-1" /> Back to Projects
         </button>
-        <h1 className="text-xl font-bold truncate" title={projectName}>{projectName}</h1>
-        <p className="text-xs text-blue-400 mt-1 uppercase tracking-wider font-semibold">AutoTrace Pro</p>
+        <h1 className="text-lg font-bold truncate text-gray-900" title={projectName}>{projectName}</h1>
+        <p className="text-xs text-primary-600 mt-1 uppercase tracking-wider font-bold">AutoTrace Pro</p>
       </div>
 
       <nav className="flex-1 overflow-y-auto py-4">
@@ -79,27 +79,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ projectId, projectName }) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-3 rounded-lg transition-all duration-200 group ${
                     isActive 
-                      ? 'bg-primary-600 text-white shadow-md shadow-primary-900/20' 
-                      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                      ? 'bg-blue-50 text-primary-700 font-semibold shadow-sm ring-1 ring-blue-100' 
+                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                   }`
                 }
               >
-                <item.icon size={20} className="mr-3 group-hover:scale-110 transition-transform" />
-                <span className="text-sm font-medium">{item.label}</span>
+                <item.icon size={20} className={`mr-3 transition-transform ${({isActive}: any) => isActive ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                <span className="text-sm">{item.label}</span>
               </NavLink>
             </li>
           ))}
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-slate-800">
+      <div className="p-4 border-t border-gray-100 bg-gray-50/50">
         <div className="flex items-center">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-400 to-purple-500 flex items-center justify-center text-xs font-bold text-white">
+          <div className="w-9 h-9 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-xs font-bold text-primary-600">
             U
           </div>
           <div className="ml-3">
-            <p className="text-sm font-medium">Demo User</p>
-            <p className="text-xs text-slate-500">Engineer</p>
+            <p className="text-sm font-semibold text-gray-800">Demo User</p>
+            <p className="text-xs text-gray-500">Engineer</p>
           </div>
         </div>
       </div>
