@@ -4,7 +4,7 @@ import { ProjectList } from './pages/ProjectList';
 import { Dashboard } from './pages/Dashboard';
 import { AIAssistant } from './pages/AIAssistant';
 import { Traceability } from './pages/Traceability';
-import { DataSources, Documents } from './pages/DataDocs';
+import { DataSources, Documents, DocumentReview } from './pages/DataDocs';
 import { Sidebar } from './components/Layout';
 import { Project } from './types';
 
@@ -102,6 +102,7 @@ const App: React.FC = () => {
           <Route path="ai" element={<AIAssistant />} />
           <Route path="data" element={<ProjectContextConsumer Component={DataSources} projects={projects} setProjects={setProjects} />} />
           <Route path="docs" element={<ProjectContextConsumer Component={Documents} projects={projects} setProjects={setProjects} />} />
+          <Route path="review/:sourceId/:docId" element={<ProjectContextConsumer Component={DocumentReview} projects={projects} setProjects={setProjects} />} />
         </Route>
       </Routes>
     </HashRouter>

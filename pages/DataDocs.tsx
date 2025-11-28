@@ -3,8 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Database, FileText, Download, ExternalLink, Trash2, Github, Globe, HardDrive, 
   Plus, RefreshCw, ToggleLeft, ToggleRight, ChevronRight, ChevronDown, FileCode, Folder, ArrowLeft, CheckCircle2,
-  Lock, User, Key, AtSign, Search, Loader2, Play, Eye, Image as ImageIcon, Save, Edit2, ChevronUp, LayoutTemplate, Filter, MousePointerClick, X, FolderOpen, List
+  Lock, User, Key, AtSign, Search, Loader2, Play, Eye, Image as ImageIcon, Save, Edit2, ChevronUp, LayoutTemplate, Filter, MousePointerClick, X, FolderOpen, List, AlertCircle
 } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Project, DataSource, DataSourceType, ParsingStatus, DocumentArtifact } from '../types';
 import { Modal } from '../components/Layout';
 
@@ -273,7 +274,7 @@ const GenericDetailView: React.FC<{
   );
 };
 
-// --- Document Review Modal (Split View) ---
+// --- Document Review Page (Standalone) ---
 
 interface ParsedBlock {
   id: string;
@@ -314,16 +315,51 @@ const MOCK_PARSED_CONTENT: ParsedBlock[] = [
   }
 ];
 
-const ImageReviewModal: React.FC<{ 
-  isOpen: boolean; 
-  onClose: () => void; 
-  onSave: () => void;
-  docName: string; 
-}> = ({ isOpen, onClose, onSave, docName }) => {
+export const DocumentReview: React.FC<{ 
+  project: Project; 
+  onUpdateProject: (p: Project) => void;
+}> = ({ project, onUpdateProject }) => {
+  const { id, sourceId, docId } = useParams();
+  const navigate = useNavigate();
+  
   const [blocks, setBlocks] = useState<ParsedBlock[]>(MOCK_PARSED_CONTENT);
   const [activeImageId, setActiveImageId] = useState<string | null>(null);
 
-  if (!isOpen) return null;
+  const source = project.dataSources.find(ds => ds.id === sourceId);
+  const doc = source?.documents.find(d => d.id === docId);
+
+  if (!source || !doc) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-gray-500">
+         <AlertCircle size={48} className="mb-4 text-red-400"/>
+         <h2 className="text-xl font-bold">Document Not Found</h2>
+         <button onClick={() => navigate(-1)} className="mt-4 text-primary-600 hover:underline">Go Back</button>
+      </div>
+    );
+  }
+
+  const handleSave = () => {
+    // Update Document Status to Verified
+    const updatedProject = { ...project };
+    updatedProject.dataSources = updatedProject.dataSources.map(ds => {
+      if (ds.id === sourceId) {
+        return {
+          ...ds,
+          documents: ds.documents.map(d => 
+            d.id === docId ? { ...d, parsingStatus: 'Verified' as ParsingStatus } : d
+          )
+        };
+      }
+      return ds;
+    });
+
+    onUpdateProject(updatedProject);
+    navigate(`/project/${id}/docs`);
+  };
+
+  const handleCancel = () => {
+    navigate(`/project/${id}/docs`);
+  };
 
   const images = blocks.filter(b => b.type === 'image');
 
@@ -340,20 +376,24 @@ const ImageReviewModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-6xl h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+    <div className="h-full flex flex-col bg-gray-50 animate-in fade-in duration-300">
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <div>
-            <h2 className="text-lg font-bold text-gray-800 flex items-center">
-              <FileText size={20} className="mr-2 text-primary-600"/>
-              Review Parse Results: <span className="ml-1 font-normal text-gray-600">{docName}</span>
-            </h2>
-            <p className="text-xs text-gray-500 mt-1">Verify and edit image descriptions extracted from the document.</p>
+        <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-white">
+          <div className="flex items-center">
+            <button onClick={handleCancel} className="mr-4 p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
+               <ArrowLeft size={20}/>
+            </button>
+            <div>
+              <h2 className="text-lg font-bold text-gray-800 flex items-center">
+                <FileText size={20} className="mr-2 text-primary-600"/>
+                Review Parse Results: <span className="ml-1 font-normal text-gray-600">{doc.name}</span>
+              </h2>
+              <p className="text-xs text-gray-500 mt-1">Verify and edit image descriptions extracted from the document.</p>
+            </div>
           </div>
           <div className="flex space-x-3">
-            <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors font-medium">Cancel</button>
-            <button onClick={onSave} className="px-4 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-lg transition-colors font-medium flex items-center">
+            <button onClick={handleCancel} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium">Cancel</button>
+            <button onClick={handleSave} className="px-4 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-lg transition-colors font-medium flex items-center shadow-sm">
               <Save size={16} className="mr-2"/> Confirm & Save
             </button>
           </div>
@@ -363,7 +403,7 @@ const ImageReviewModal: React.FC<{
         <div className="flex-1 flex overflow-hidden">
           
           {/* Left Sidebar - Image List */}
-          <div className="w-80 bg-gray-50 border-r border-gray-200 overflow-y-auto p-4">
+          <div className="w-80 bg-white border-r border-gray-200 overflow-y-auto p-4">
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Extracted Images ({images.length})</h3>
             <div className="space-y-3">
               {images.map((img, idx) => (
@@ -372,7 +412,7 @@ const ImageReviewModal: React.FC<{
                   onClick={() => handleScrollTo(img.id)}
                   className={`group cursor-pointer p-3 rounded-lg border transition-all hover:shadow-md flex gap-3 ${
                     activeImageId === img.id 
-                      ? 'bg-white border-primary-500 ring-1 ring-primary-500 shadow-md' 
+                      ? 'bg-blue-50 border-primary-500 ring-1 ring-primary-500 shadow-sm' 
                       : 'bg-white border-gray-200 hover:border-primary-300'
                   }`}
                 >
@@ -390,8 +430,8 @@ const ImageReviewModal: React.FC<{
           </div>
 
           {/* Right Side - Document Flow */}
-          <div className="flex-1 overflow-y-auto bg-gray-100 p-8 relative scroll-smooth">
-            <div className="max-w-3xl mx-auto bg-white shadow-lg min-h-full p-12 rounded-sm">
+          <div className="flex-1 overflow-y-auto bg-gray-50 p-8 relative scroll-smooth">
+            <div className="max-w-3xl mx-auto bg-white shadow-sm border border-gray-100 min-h-full p-12 rounded-sm">
               {blocks.map(block => {
                 if (block.type === 'text') {
                   return (
@@ -405,7 +445,7 @@ const ImageReviewModal: React.FC<{
                       key={block.id} 
                       id={`block-${block.id}`} 
                       className={`mb-8 scroll-mt-8 p-4 rounded-xl border-2 transition-all ${
-                        activeImageId === block.id ? 'border-primary-400 bg-primary-50/30' : 'border-transparent hover:border-gray-200'
+                        activeImageId === block.id ? 'border-primary-400 bg-blue-50/50' : 'border-transparent hover:border-gray-200'
                       }`}
                       onClick={() => setActiveImageId(block.id)}
                     >
@@ -438,7 +478,6 @@ const ImageReviewModal: React.FC<{
           </div>
 
         </div>
-      </div>
     </div>
   );
 };
@@ -1232,8 +1271,7 @@ const GitFilesModal: React.FC<{
 // --- Main Documents Component ---
 
 export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }) => {
-  const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [selectedDocForReview, setSelectedDocForReview] = useState<{ dsId: string, doc: DocumentArtifact } | null>(null);
+  const navigate = useNavigate();
   
   // Structure State
   const [structureModalOpen, setStructureModalOpen] = useState(false); 
@@ -1281,30 +1319,7 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
   };
 
   const handleReview = (dsId: string, doc: DocumentArtifact) => {
-    setSelectedDocForReview({ dsId, doc });
-    setReviewModalOpen(true);
-  };
-
-  const handleConfirmReview = () => {
-    if (!selectedDocForReview) return;
-    
-    const { dsId, doc } = selectedDocForReview;
-    const updatedProject = { ...project };
-    updatedProject.dataSources = updatedProject.dataSources.map(ds => {
-      if (ds.id === dsId) {
-        return {
-          ...ds,
-          documents: ds.documents.map(d => 
-            d.id === doc.id ? { ...d, parsingStatus: 'Verified' as ParsingStatus } : d
-          )
-        };
-      }
-      return ds;
-    });
-
-    onUpdateProject(updatedProject);
-    setReviewModalOpen(false);
-    setSelectedDocForReview(null);
+    navigate(`/project/${project.id}/review/${dsId}/${doc.id}`);
   };
 
   const handleStructureClick = () => {
@@ -1520,13 +1535,6 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
            </table>
         </div>
       </div>
-
-      <ImageReviewModal 
-        isOpen={reviewModalOpen} 
-        onClose={() => setReviewModalOpen(false)} 
-        onSave={handleConfirmReview}
-        docName={selectedDocForReview?.doc.name || 'Document'}
-      />
 
       {/* Selection Modal for Structuring */}
       <Modal 
