@@ -361,18 +361,14 @@ export const DocumentReview: React.FC<{
     navigate(`/project/${id}/docs`);
   };
 
-  const images = blocks.filter(b => b.type === 'image');
-
-  const handleScrollTo = (id: string) => {
-    setActiveImageId(id);
-    const element = document.getElementById(`block-${id}`);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  };
-
   const handleDescriptionChange = (id: string, newDesc: string) => {
     setBlocks(blocks.map(b => b.id === id ? { ...b, description: newDesc } : b));
+  };
+
+  const handleSaveBlock = (blockId: string) => {
+    // In a real application, this would trigger an API call to save the specific block annotation
+    // For now, we simulate success
+    alert("Single image description saved.");
   };
 
   return (
@@ -399,39 +395,12 @@ export const DocumentReview: React.FC<{
           </div>
         </div>
 
-        {/* Body - Split View */}
-        <div className="flex-1 flex overflow-hidden">
+        {/* Body - Single Column View */}
+        <div className="flex-1 flex overflow-hidden justify-center">
           
-          {/* Left Sidebar - Image List */}
-          <div className="w-80 bg-white border-r border-gray-200 overflow-y-auto p-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Extracted Images ({images.length})</h3>
-            <div className="space-y-3">
-              {images.map((img, idx) => (
-                <div 
-                  key={img.id}
-                  onClick={() => handleScrollTo(img.id)}
-                  className={`group cursor-pointer p-3 rounded-lg border transition-all hover:shadow-md flex gap-3 ${
-                    activeImageId === img.id 
-                      ? 'bg-blue-50 border-primary-500 ring-1 ring-primary-500 shadow-sm' 
-                      : 'bg-white border-gray-200 hover:border-primary-300'
-                  }`}
-                >
-                  <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 relative">
-                    <img src={img.src} alt="thumbnail" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"/>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-gray-700 truncate mb-1">Image {idx + 1}</p>
-                    <p className="text-[10px] text-gray-500 line-clamp-2 leading-tight">{img.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right Side - Document Flow */}
-          <div className="flex-1 overflow-y-auto bg-gray-50 p-8 relative scroll-smooth">
-            <div className="max-w-3xl mx-auto bg-white shadow-sm border border-gray-100 min-h-full p-12 rounded-sm">
+          {/* Main Document Flow */}
+          <div className="flex-1 overflow-y-auto bg-gray-50 p-8 relative scroll-smooth max-w-5xl">
+            <div className="bg-white shadow-sm border border-gray-100 min-h-full p-12 rounded-sm">
               {blocks.map(block => {
                 if (block.type === 'text') {
                   return (
@@ -462,6 +431,14 @@ export const DocumentReview: React.FC<{
                             className="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white shadow-inner"
                             rows={3}
                           />
+                          <div className="flex justify-end mt-2">
+                             <button 
+                                onClick={(e) => { e.stopPropagation(); handleSaveBlock(block.id); }}
+                                className="px-3 py-1.5 text-xs font-medium text-primary-700 bg-primary-50 border border-primary-200 rounded hover:bg-primary-100 transition-colors flex items-center"
+                             >
+                               <Save size={12} className="mr-1"/> Save
+                             </button>
+                          </div>
                           {block.context && (
                             <p className="mt-2 text-xs text-gray-400 italic">
                               Context: "{block.context}"
@@ -482,7 +459,7 @@ export const DocumentReview: React.FC<{
   );
 };
 
-// --- Structure Verification View ---
+// --- Structure Verification View (Standalone) ---
 
 type StructureType = 'REQ' | 'TC' | 'ARCH' | 'DD';
 
@@ -498,12 +475,13 @@ const MOCK_STRUCTURED_ITEMS: StructuredItem[] = [
   { id: 'HW-IF-01', type: 'ARCH', content: 'Primary interface is automotive Ethernet.', linkedBlockIds: ['t4', 'img2'] },
 ];
 
-const StructureVerificationModal: React.FC<{
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: () => void;
-  docName: string;
-}> = ({ isOpen, onClose, onSave, docName }) => {
+export const StructureReview: React.FC<{
+  project: Project;
+  onUpdateProject: (p: Project) => void;
+}> = ({ project, onUpdateProject }) => {
+  const { id, sourceId, docId } = useParams();
+  const navigate = useNavigate();
+
   const [items, setItems] = useState<StructuredItem[]>(MOCK_STRUCTURED_ITEMS);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
   const [selectedBlockIds, setSelectedBlockIds] = useState<string[]>([]);
@@ -512,7 +490,18 @@ const StructureVerificationModal: React.FC<{
   const [newItemType, setNewItemType] = useState<StructureType>('REQ');
   const [newItemId, setNewItemId] = useState('');
 
-  if (!isOpen) return null;
+  const source = project.dataSources.find(ds => ds.id === sourceId);
+  const doc = source?.documents.find(d => d.id === docId);
+
+  if (!source || !doc) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-gray-500">
+         <AlertCircle size={48} className="mb-4 text-red-400"/>
+         <h2 className="text-xl font-bold">Document Not Found</h2>
+         <button onClick={() => navigate(-1)} className="mt-4 text-primary-600 hover:underline">Go Back</button>
+      </div>
+    );
+  }
 
   const filteredItems = filterType === 'ALL' ? items : items.filter(i => i.type === filterType);
 
@@ -554,6 +543,28 @@ const StructureVerificationModal: React.FC<{
     setActiveItemId(newItem.id);
   };
 
+  const handleComplete = () => {
+     // Update status to Structured
+     const updatedProject = { ...project };
+     updatedProject.dataSources = updatedProject.dataSources.map(ds => {
+       if (ds.id === sourceId) {
+         return {
+           ...ds,
+           documents: ds.documents.map(d => 
+             d.id === docId ? { ...d, parsingStatus: 'Structured' as ParsingStatus } : d
+           )
+         };
+       }
+       return ds;
+     });
+     onUpdateProject(updatedProject);
+     navigate(`/project/${id}/docs`);
+  };
+
+  const handleCancel = () => {
+    navigate(`/project/${id}/docs`);
+  };
+
   const getBadgeColor = (type: StructureType) => {
     switch(type) {
       case 'REQ': return 'bg-blue-100 text-blue-700 border-blue-200';
@@ -564,24 +575,31 @@ const StructureVerificationModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-gray-900/90 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-[95vw] h-[95vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+    <div className="h-full flex flex-col bg-gray-50 animate-in fade-in duration-300">
         {/* Header */}
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-white z-10">
-          <div>
-            <h2 className="text-lg font-bold text-gray-800 flex items-center">
-              <LayoutTemplate size={20} className="mr-2 text-primary-600"/>
-              Structure Verification: <span className="ml-1 font-normal text-gray-600">{docName}</span>
-            </h2>
-            <p className="text-xs text-gray-500 mt-1">Verify extracted items and link them to source text.</p>
+          <div className="flex items-center">
+            <button onClick={handleCancel} className="mr-4 p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
+               <ArrowLeft size={20}/>
+            </button>
+            <div>
+              <h2 className="text-lg font-bold text-gray-800 flex items-center">
+                <LayoutTemplate size={20} className="mr-2 text-primary-600"/>
+                Structure Verification: <span className="ml-1 font-normal text-gray-600">{doc.name}</span>
+              </h2>
+              <p className="text-xs text-gray-500 mt-1">Verify extracted items and link them to source text.</p>
+            </div>
           </div>
           <div className="flex items-center space-x-4">
              <div className="text-xs text-gray-400 mr-4 flex items-center">
                 <MousePointerClick size={14} className="mr-1"/> Select blocks on right to create new items
              </div>
-             <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-               <X size={20} className="text-gray-500"/>
-             </button>
+             <div className="flex space-x-3">
+               <button onClick={handleCancel} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Cancel</button>
+               <button onClick={handleComplete} className="px-6 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg shadow font-medium flex items-center">
+                 <CheckCircle2 size={18} className="mr-2"/> Complete Verification
+               </button>
+             </div>
           </div>
         </div>
 
@@ -701,15 +719,6 @@ const StructureVerificationModal: React.FC<{
              </div>
           </div>
         </div>
-        
-        {/* Footer */}
-        <div className="bg-white border-t border-gray-200 px-6 py-4 flex justify-end space-x-3">
-           <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Cancel</button>
-           <button onClick={onSave} className="px-6 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg shadow font-medium flex items-center">
-             <CheckCircle2 size={18} className="mr-2"/> Complete Verification
-           </button>
-        </div>
-      </div>
     </div>
   );
 };
@@ -1275,8 +1284,7 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
   
   // Structure State
   const [structureModalOpen, setStructureModalOpen] = useState(false); 
-  const [verificationViewOpen, setVerificationViewOpen] = useState(false); 
-  const [selectedDocForStructure, setSelectedDocForStructure] = useState<{ dsId: string, doc: DocumentArtifact } | null>(null);
+  // const [selectedDocForStructure, setSelectedDocForStructure] = useState<{ dsId: string, doc: DocumentArtifact } | null>(null);
 
   // Git Browser State
   const [gitFilesModalOpen, setGitFilesModalOpen] = useState(false);
@@ -1327,31 +1335,9 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
   };
 
   const handleSelectDocForStructure = (dsId: string, doc: DocumentArtifact) => {
-    setSelectedDocForStructure({ dsId, doc });
+    // setSelectedDocForStructure({ dsId, doc });
     setStructureModalOpen(false);
-    setVerificationViewOpen(true);
-  };
-
-  const handleConfirmStructure = () => {
-     if(!selectedDocForStructure) return;
-     const { dsId, doc } = selectedDocForStructure;
-
-     // Update status to Structured
-     const updatedProject = { ...project };
-     updatedProject.dataSources = updatedProject.dataSources.map(ds => {
-       if (ds.id === dsId) {
-         return {
-           ...ds,
-           documents: ds.documents.map(d => 
-             d.id === doc.id ? { ...d, parsingStatus: 'Structured' as ParsingStatus } : d
-           )
-         };
-       }
-       return ds;
-     });
-     onUpdateProject(updatedProject);
-     setVerificationViewOpen(false);
-     setSelectedDocForStructure(null);
+    navigate(`/project/${project.id}/structure/${dsId}/${doc.id}`);
   };
 
   const handleOpenGitFiles = (dsId: string) => {
@@ -1570,13 +1556,6 @@ export const Documents: React.FC<DocumentsProps> = ({ project, onUpdateProject }
             </div>
          </div>
       </Modal>
-
-      <StructureVerificationModal 
-         isOpen={verificationViewOpen}
-         onClose={() => setVerificationViewOpen(false)}
-         onSave={handleConfirmStructure}
-         docName={selectedDocForStructure?.doc.name || 'Document'}
-      />
 
       <GitFilesModal 
          isOpen={gitFilesModalOpen}
