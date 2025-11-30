@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { HashRouter, Routes, Route, Outlet, useParams, Navigate } from 'react-router-dom';
 import { ProjectList } from './pages/ProjectList';
@@ -98,7 +99,7 @@ const App: React.FC = () => {
         <Route path="/project/:id" element={<ProjectLayout projects={projects} />}>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<ProjectContextConsumer Component={Dashboard} projects={projects} />} />
-          <Route path="traceability" element={<Traceability />} />
+          <Route path="traceability" element={<ProjectContextConsumer Component={Traceability} projects={projects} setProjects={setProjects} />} />
           <Route path="ai" element={<AIAssistant />} />
           <Route path="data" element={<ProjectContextConsumer Component={DataSources} projects={projects} setProjects={setProjects} />} />
           <Route path="docs" element={<ProjectContextConsumer Component={Documents} projects={projects} setProjects={setProjects} />} />

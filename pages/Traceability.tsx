@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
-import { Plus, Save, Download, Check, ArrowRight, AlertCircle, FileText, Code, Box, Activity, LayoutGrid, ArrowLeft, Calendar, PieChart, MoreHorizontal, Trash2, Search } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Save, ArrowRight, AlertCircle, FileText, Code, Box, Activity, LayoutGrid, ArrowLeft, Calendar, Trash2, Github, Globe, Link2, CheckCircle2 } from 'lucide-react';
 import { Modal } from '../components/Layout';
-import { TraceType, TraceNode, TraceLink } from '../types';
+import { TraceType, TraceNode, TraceLink, Project, DocumentArtifact, SchemaLinkItem, SchemaLinkResponse } from '../types';
 
 // --- Mock Data ---
 const INITIAL_NODES: TraceNode[] = [
@@ -54,7 +54,7 @@ interface TraceRecord {
   lastUpdated: string;
   author: string;
   coverage: number;
-  status: 'Draft' | 'Verified' | 'In Progress';
+  status: string;
 }
 
 const AVAILABLE_RELATIONS = [
@@ -64,65 +64,123 @@ const AVAILABLE_RELATIONS = [
   { id: 'DD-TC', label: 'Code ↔ Test Case', source: TraceType.CODE, target: TraceType.TEST },
 ];
 
-const INITIAL_RECORDS: TraceRecord[] = [
-  {
-    id: 'tr-1',
-    name: 'System Requirements Traceability',
-    description: 'Validation of system requirements against architectural design modules.',
-    relationLabel: 'Requirement ↔ Architecture',
-    sourceType: TraceType.REQUIREMENT,
-    targetType: TraceType.DESIGN,
-    lastUpdated: '2023-10-24',
-    author: 'Alice Chen',
-    coverage: 100,
-    status: 'Verified'
-  },
-  {
-    id: 'tr-2',
-    name: 'Safety Critical Validation',
-    description: 'Traceability matrix for ASIL-D safety requirements and system validation tests.',
-    relationLabel: 'Requirement ↔ Test Case',
-    sourceType: TraceType.REQUIREMENT,
-    targetType: TraceType.TEST,
-    lastUpdated: '2023-10-25',
-    author: 'Bob Smith',
-    coverage: 85,
-    status: 'In Progress'
-  },
-  {
-    id: 'tr-3',
-    name: 'Design Implementation Status',
-    description: 'Tracking architectural modules to code implementation.',
-    relationLabel: 'Architecture ↔ Code/DD',
-    sourceType: TraceType.DESIGN,
-    targetType: TraceType.CODE,
-    lastUpdated: 'Today',
-    author: 'Charlie Wang',
-    coverage: 50,
-    status: 'Draft'
-  }
-];
+interface TraceabilityProps {
+  project: Project;
+  onUpdateProject: (p: Project) => void;
+}
 
-export const Traceability: React.FC = () => {
+// Mock API Response Data
+const MOCK_API_RESPONSE: SchemaLinkResponse = {
+  "success": true,
+  "message": "ok",
+  "code": 200,
+  "data": [
+    {
+      "relation_type": "verifies",
+      "description": "需求验证关系，表示测试用例验证需求",
+      // "0": { ... } // Ignored
+      "id": "9e3ddf0-faa55da-b34e-4170faab6f",
+      "status": "active",
+      "created_at": "2025-11-30T22:40:43.176740+08:00",
+      "updated_at": "2025-11-30T22:40:43.176740+08:00",
+      "source_schema": {
+        "id": "6b2980b-1a37-4694-617d-420760319adb",
+        "name": "requirement",
+        "description": "需求"
+      },
+      "target_schema": {
+        "id": "7a0516c-e712-4969-6587-1db45684775b",
+        "name": "test_case",
+        "description": "测试用例"
+      }
+    },
+    // Adding a second mock item to demonstrate list capability
+    {
+      "relation_type": "implements",
+      "description": "设计实现关系，表示架构设计实现需求",
+      "id": "8f2cc-123-abc",
+      "status": "active",
+      "created_at": "2025-11-30T22:45:00.000000+08:00",
+      "updated_at": "2025-11-30T22:45:00.000000+08:00",
+      "source_schema": {
+        "id": "req-id",
+        "name": "requirement",
+        "description": "需求"
+      },
+      "target_schema": {
+        "id": "arch-id",
+        "name": "architecture",
+        "description": "架构"
+      }
+    }
+  ]
+};
+
+export const Traceability: React.FC<TraceabilityProps> = ({ project }) => {
   // State
   const [viewMode, setViewMode] = useState<'list' | 'matrix'>('list');
-  const [records, setRecords] = useState<TraceRecord[]>(INITIAL_RECORDS);
+  const [schemaLinks, setSchemaLinks] = useState<SchemaLinkItem[]>([]);
   const [activeRecord, setActiveRecord] = useState<TraceRecord | null>(null);
   
-  // Matrix Data State (shared across views logically, but filtered by view)
+  // Matrix Data State
   const [nodes] = useState<TraceNode[]>(INITIAL_NODES);
   const [links, setLinks] = useState<TraceLink[]>(INITIAL_LINKS);
   
   // UI State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Form State
-  const [newName, setNewName] = useState('');
-  const [newDesc, setNewDesc] = useState('');
-  const [newRelationType, setNewRelationType] = useState(AVAILABLE_RELATIONS[0].id);
+  // --- API Fetch Simulation ---
+  useEffect(() => {
+    const fetchSchemaLinks = async () => {
+      setIsLoading(true);
+      try {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Use Mock Data representing /api/v1/schema/schema-link/list
+        const response = MOCK_API_RESPONSE;
+        
+        if (response.success) {
+          setSchemaLinks(response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch schema links", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSchemaLinks();
+  }, []);
 
   // --- Helpers ---
+
+  // Map API schema names to frontend TraceType enum
+  const mapSchemaToTraceType = (schemaName: string): TraceType => {
+    const lower = schemaName.toLowerCase();
+    if (lower.includes('req')) return TraceType.REQUIREMENT;
+    if (lower.includes('arch')) return TraceType.DESIGN;
+    if (lower.includes('code') || lower.includes('design')) return TraceType.CODE;
+    if (lower.includes('test')) return TraceType.TEST;
+    return TraceType.REQUIREMENT; // Default fallback
+  };
+
+  const mapApiItemToRecord = (item: SchemaLinkItem): TraceRecord => {
+     return {
+        id: item.id,
+        name: item.relation_type,
+        description: item.description,
+        relationLabel: `${item.source_schema.name} → ${item.target_schema.name}`,
+        sourceType: mapSchemaToTraceType(item.source_schema.name),
+        targetType: mapSchemaToTraceType(item.target_schema.name),
+        lastUpdated: new Date(item.updated_at).toLocaleDateString(),
+        author: 'System',
+        coverage: Math.floor(Math.random() * 40) + 60, // Mock coverage
+        status: item.status
+     };
+  };
 
   const getTypeIcon = (type: TraceType) => {
     switch (type) {
@@ -135,17 +193,20 @@ export const Traceability: React.FC = () => {
   };
 
   const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'Verified': return 'bg-green-100 text-green-700';
-      case 'Draft': return 'bg-gray-100 text-gray-600';
-      case 'In Progress': return 'bg-blue-100 text-blue-700';
+    switch(status.toLowerCase()) {
+      case 'active': return 'bg-green-100 text-green-700';
+      case 'verified': return 'bg-green-100 text-green-700';
+      case 'draft': return 'bg-gray-100 text-gray-600';
+      case 'in progress': return 'bg-blue-100 text-blue-700';
       default: return 'bg-gray-100 text-gray-600';
     }
   };
 
   // --- Actions ---
 
-  const handleOpenMatrix = (record: TraceRecord) => {
+  const handleOpenMatrix = (item: SchemaLinkItem) => {
+    // Convert API item to TraceRecord for the Matrix View
+    const record = mapApiItemToRecord(item);
     setActiveRecord(record);
     setUnsavedChanges(false);
     setViewMode('matrix');
@@ -171,44 +232,42 @@ export const Traceability: React.FC = () => {
 
   const handleSaveMatrix = () => {
     setUnsavedChanges(false);
-    // Update the "lastUpdated" field of the active record
-    if (activeRecord) {
-       const updatedRecords = records.map(r => r.id === activeRecord.id ? { ...r, lastUpdated: 'Just now' } : r);
-       setRecords(updatedRecords);
-    }
     alert("Traceability matrix saved successfully!");
   };
 
-  const handleCreateRecord = (e: React.FormEvent) => {
-    e.preventDefault();
-    const relation = AVAILABLE_RELATIONS.find(r => r.id === newRelationType);
-    if (!relation) return;
-
-    const newRecord: TraceRecord = {
-      id: `tr-${Date.now()}`,
-      name: newName,
-      description: newDesc || 'No description provided.',
-      relationLabel: relation.label,
-      sourceType: relation.source,
-      targetType: relation.target,
-      lastUpdated: 'Just now',
-      author: 'Current User',
-      coverage: 0,
-      status: 'Draft'
-    };
-
-    setRecords([newRecord, ...records]);
-    setIsAddModalOpen(false);
-    setNewName('');
-    setNewDesc('');
+  const handleConfirmCreation = async () => {
+    try {
+      await fetch('/api/v1/trace-links/edge', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          project_id: project.id
+        })
+      });
+      // In a real app we might verify response here, 
+      // but for this request we just ensure the interface is called.
+    } catch (e) {
+      console.error("API Error", e);
+    } finally {
+      setIsAddModalOpen(false);
+    }
   };
 
   const handleDeleteRecord = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     if (window.confirm('Delete this traceability record?')) {
-      setRecords(records.filter(r => r.id !== id));
+      setSchemaLinks(schemaLinks.filter(r => r.id !== id));
     }
   };
+
+  // Flatten documents for selection
+  const availableDocs = React.useMemo(() => {
+    return project.dataSources.flatMap(ds => 
+      ds.documents.map(doc => ({ ...doc, sourceName: ds.name, sourceType: ds.type }))
+    ).filter(d => d.isEnabled);
+  }, [project]);
 
   // --- Views ---
 
@@ -217,7 +276,7 @@ export const Traceability: React.FC = () => {
       <div className="flex justify-between items-end mb-8">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">Traceability Management</h2>
-          <p className="text-gray-500 mt-1">Create and manage bidirectional traceability matrices.</p>
+          <p className="text-gray-500 mt-1">Manage traceability schemas and relations.</p>
         </div>
         <button 
           onClick={() => setIsAddModalOpen(true)}
@@ -228,65 +287,69 @@ export const Traceability: React.FC = () => {
       </div>
 
       <div className="grid gap-4">
-        {records.map(record => (
-          <div 
-            key={record.id}
-            onClick={() => handleOpenMatrix(record)}
-            className="group bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-primary-200 transition-all cursor-pointer relative overflow-hidden"
-          >
-            <div className="absolute top-0 left-0 w-1 h-full bg-primary-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center mb-2">
-                   <h3 className="text-lg font-bold text-gray-800 group-hover:text-primary-600 transition-colors">{record.name}</h3>
-                   <span className={`ml-3 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(record.status)}`}>
-                     {record.status}
-                   </span>
+        {isLoading ? (
+          <div className="text-center py-20 text-gray-400">
+            Loading schema links...
+          </div>
+        ) : (
+          schemaLinks.map(item => (
+            <div 
+              key={item.id}
+              onClick={() => handleOpenMatrix(item)}
+              className="group bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-primary-200 transition-all cursor-pointer relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-1 h-full bg-primary-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center mb-2">
+                     <h3 className="text-lg font-bold text-gray-800 group-hover:text-primary-600 transition-colors uppercase tracking-wide">
+                        {item.relation_type}
+                     </h3>
+                     <span className={`ml-3 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                       {item.status}
+                     </span>
+                  </div>
+                  
+                  <p className="text-gray-500 text-sm mb-4">{item.description}</p>
+                  
+                  <div className="flex items-center space-x-2 text-sm bg-gray-50 p-3 rounded-lg border border-gray-100 w-fit">
+                     <div className="flex items-center font-medium text-gray-700">
+                        <span className="text-xs text-gray-400 mr-2 uppercase">Source</span>
+                        {item.source_schema.name}
+                     </div>
+                     <ArrowRight size={14} className="text-gray-400 mx-2"/>
+                     <div className="flex items-center font-medium text-gray-700">
+                        <span className="text-xs text-gray-400 mr-2 uppercase">Target</span>
+                        {item.target_schema.name}
+                     </div>
+                  </div>
                 </div>
-                <p className="text-gray-500 text-sm mb-3">{record.description}</p>
-                <div className="flex items-center text-xs text-gray-400 space-x-4">
-                   <div className="flex items-center bg-gray-50 px-2 py-1 rounded border border-gray-100">
-                      {getTypeIcon(record.sourceType)} 
-                      <span className="mx-2 text-gray-300">→</span> 
-                      {getTypeIcon(record.targetType)}
-                      <span className="ml-2 text-gray-600 font-medium">{record.relationLabel}</span>
-                   </div>
-                   <div className="flex items-center">
-                      <Calendar size={12} className="mr-1"/> {record.lastUpdated}
-                   </div>
-                   <div className="flex items-center">
-                      <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[9px] font-bold mr-1">
-                        {record.author.charAt(0)}
-                      </span>
-                      {record.author}
-                   </div>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-6 md:border-l border-gray-100 md:pl-6">
-                <div className="text-center min-w-[80px]">
-                  <div className="text-2xl font-bold text-gray-800">{record.coverage}%</div>
-                  <div className="text-xs text-gray-400 font-medium uppercase tracking-wider">Coverage</div>
+                <div className="flex items-center gap-6 md:border-l border-gray-100 md:pl-6">
+                  <div className="text-center min-w-[80px]">
+                    <div className="text-xs text-gray-400 mb-1">Created</div>
+                    <div className="text-sm font-medium text-gray-600">{new Date(item.created_at).toLocaleDateString()}</div>
+                  </div>
+                  <button className="p-2 text-primary-600 bg-primary-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary-100">
+                    <ArrowRight size={20} />
+                  </button>
+                  <button 
+                    onClick={(e) => handleDeleteRecord(e, item.id)}
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
-                <button className="p-2 text-primary-600 bg-primary-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary-100">
-                  <ArrowRight size={20} />
-                </button>
-                <button 
-                  onClick={(e) => handleDeleteRecord(e, record.id)}
-                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                >
-                  <Trash2 size={18} />
-                </button>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
 
-        {records.length === 0 && (
+        {!isLoading && schemaLinks.length === 0 && (
           <div className="text-center py-20 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl">
             <LayoutGrid size={48} className="mx-auto text-gray-300 mb-4"/>
-            <h3 className="text-gray-500 font-medium">No traceability records found</h3>
+            <h3 className="text-gray-500 font-medium">No traceability schemas found</h3>
             <p className="text-gray-400 text-sm mt-1">Create a new scope to start linking artifacts.</p>
           </div>
         )}
@@ -354,7 +417,7 @@ export const Traceability: React.FC = () => {
                                   ${isLinked ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-gray-100'}
                                `}
                              >
-                                {isLinked && <Check size={20} className="text-primary-600" />}
+                                {isLinked && <CheckCircle2 size={20} className="text-primary-600" />}
                              </div>
                           );
                        })}
@@ -374,60 +437,65 @@ export const Traceability: React.FC = () => {
       <Modal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)}
-        title="Create Traceability Scope"
+        title="Create New Traceability Scope"
       >
-        <form onSubmit={handleCreateRecord} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Scope Name</label>
-            <input 
-              type="text" 
-              required
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none"
-              placeholder="e.g. System Requirements Validation"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Traceability Relation</label>
-            <select
-              value={newRelationType}
-              onChange={(e) => setNewRelationType(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none bg-white"
-            >
-              {AVAILABLE_RELATIONS.map(rel => (
-                <option key={rel.id} value={rel.id}>{rel.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-            <textarea 
-              value={newDesc}
-              onChange={(e) => setNewDesc(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 outline-none h-24 resize-none"
-              placeholder="Describe the purpose of this matrix..."
-            />
-          </div>
-          
-          <div className="pt-4 flex justify-end space-x-3">
+        <div className="space-y-4">
+           <div className="bg-blue-50 text-blue-800 text-sm p-3 rounded-lg border border-blue-100 flex items-start">
+             <AlertCircle size={16} className="mr-2 mt-0.5 flex-shrink-0"/>
+             <p>Review the available documents. Click confirm to generate the traceability graph edges.</p>
+           </div>
+           
+           <div className="max-h-[400px] overflow-y-auto border border-gray-200 rounded-lg">
+             {availableDocs.length === 0 ? (
+               <div className="p-8 text-center text-gray-400">
+                 No enabled documents found. Please add documents in Data Management first.
+               </div>
+             ) : (
+               <table className="w-full text-left">
+                  <thead className="bg-gray-50 border-b border-gray-100 text-gray-500">
+                     <tr>
+                        <th className="px-4 py-2 text-xs font-semibold">Document Name</th>
+                        <th className="px-4 py-2 text-xs font-semibold">Source</th>
+                     </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {availableDocs.map(doc => (
+                      <tr key={doc.id} className="hover:bg-gray-50 group">
+                        <td className="px-4 py-3">
+                           <div className="flex items-center">
+                              <FileText size={16} className="text-gray-400 mr-2 group-hover:text-primary-500"/>
+                              <span className="text-sm font-medium text-gray-700 group-hover:text-primary-700">{doc.name}</span>
+                           </div>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-500 flex items-center">
+                           {doc.sourceType === 'Git' && <Github size={12} className="mr-1"/>}
+                           {doc.sourceType === 'Jira' && <Globe size={12} className="mr-1"/>}
+                           {doc.sourceName}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+               </table>
+             )}
+           </div>
+           
+           <div className="pt-2 flex justify-end space-x-3">
             <button 
               type="button" 
               onClick={() => setIsAddModalOpen(false)}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium"
+              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium text-sm"
             >
               Cancel
             </button>
             <button 
-              type="submit" 
-              className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 shadow-md transition-all font-medium"
+              type="button" 
+              onClick={handleConfirmCreation}
+              className="px-4 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-lg shadow-sm transition-colors font-medium text-sm"
             >
-              Create Scope
+              Confirm
             </button>
-          </div>
-        </form>
+           </div>
+        </div>
       </Modal>
     </div>
   );

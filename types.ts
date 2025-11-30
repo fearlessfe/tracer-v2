@@ -72,3 +72,29 @@ export interface ChatMessage {
   content: string;
   timestamp: number;
 }
+
+// --- New API Types ---
+
+export interface SchemaNodeInfo {
+  id: string;
+  name: string; // e.g. "requirement"
+  description: string;
+}
+
+export interface SchemaLinkItem {
+  id: string;
+  relation_type: string; // e.g. "verifies"
+  description: string;
+  status: string; // e.g. "active"
+  source_schema: SchemaNodeInfo;
+  target_schema: SchemaNodeInfo;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SchemaLinkResponse {
+  success: boolean;
+  message: string;
+  code: number;
+  data: SchemaLinkItem[];
+}
